@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AWS SAA Puzzle | MOBILE OPTIMIZED EDITION</title>
+    <title>AWS SAA Puzzle | VERTICAL MOBILE EDITION</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -32,17 +32,15 @@
 
         .controls-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: #eee; border: 2px solid #ccc; font-weight: bold; color: var(--primary); font-size: 14px;}
 
-        /* キャンバス全体のスクロールを許可 (touch-action: auto または noneを外す) */
         #canvas-area { position: relative; width: 100%; min-height: 400px; background: #fdfdfd; border: 4px dashed #333; margin-bottom: 20px; overflow: hidden; touch-action: pan-y; }
         #links-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
 
         .aws-slot {
             position: absolute; width: 95px; height: 45px; border: 3px dashed #888; background: var(--slot-bg);
             border-radius: 4px; transform: translate(-50%, -50%); z-index: 2; display: flex; align-items: center; justify-content: center;
-            color: #888; font-weight: bold; font-size: 12px; pointer-events: none; /* スロット自体はタッチイベントを透過 */
+            color: #888; font-weight: bold; font-size: 12px; pointer-events: none;
         }
 
-        /* ノードだけはドラッグのために touch-action: none を設定 */
         .aws-node {
             position: absolute; width: 95px; height: 45px; background: white; border: 3px solid black; color: black;
             font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; text-align: center;
@@ -68,8 +66,7 @@
 
         .explanation-text { font-size: 14px; line-height: 1.6; margin-top: 15px; font-weight: bold; color: inherit; white-space: pre-wrap; text-align: left;}
         
-        /* プレビューエリアも動的な高さに対応させる */
-        #correct-canvas { position: relative; width: 100%; min-height: 250px; background: #fdfdfd; border: 2px dashed #ccc; overflow: hidden; }
+        #correct-canvas { position: relative; width: 100%; min-height: 250px; background: #fdfdfd; border: 2px dashed #ccc; overflow: hidden; touch-action: pan-y; }
         .aws-node-mini { position: absolute; width: 85px; height: 40px; background: white; border: 3px solid var(--success); color: black; font-weight: bold; font-size: 10px; text-align: center; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); pointer-events: none; box-shadow: 2px 2px 0 #ccc; }
 
         .timer-container { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: #000; border-top: 4px solid var(--primary); display: flex; align-items: center; justify-content: center; z-index: 100; box-shadow: 0 -5px 15px rgba(211,18,18,0.2); }
@@ -241,9 +238,8 @@
         document.getElementById('result-box').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('shake');
         document.getElementById('submit-btn').disabled = false;
-        
-        // ★ キャンバス内のスクロール制御はCSSで行うため、JS制御は削除
-        
+        document.getElementById('canvas-area').style.pointerEvents = 'auto';
+
         setupCanvas(); renderPalette(); startBGM(); startTimer();
     }
 
@@ -263,7 +259,7 @@
     }
     function stopTimer() { cancelAnimationFrame(timerInterval); document.getElementById('timer-ui').classList.add('hidden'); }
 
-    // ★ 重なり防止・スマホ対応のレイアウト計算
+    // ★ 縦ベースのレイアウト計算（上から下へ流れるように）
     function calculateNodePositions(nodes, links, canvasW) {
         let inDegree = {}; let adj = {};
         nodes.forEach(n => { inDegree[n] = 0; adj[n] = []; });
@@ -286,27 +282,24 @@
             if(!layerCounts[l]) layerCounts[l] = []; layerCounts[l].push(n);
         });
         
-        // ★ X軸の計算（横幅）
-        const spacingX = canvasW / (maxLayer + 2);
+        // ★ Y軸（縦）の高さ計算
+        const requiredHeightPerLayer = 100; // 1レイヤーあたりの高さ
+        const requiredCanvasH = Math.max(350, (maxLayer + 2) * requiredHeightPerLayer);
+        const spacingY = requiredCanvasH / (maxLayer + 2);
+        
         let positions = {};
         
-        // ★ スマホ等で画面幅が狭く、縦に多くのノードが並ぶ場合にキャンバスの高さを拡張する
-        let maxNodesInLayer = 0;
-        for(let l=0; l <= maxLayer; l++) {
-            if(layerCounts[l] && layerCounts[l].length > maxNodesInLayer) maxNodesInLayer = layerCounts[l].length;
-        }
-        
-        // 1つのノードあたり必要な高さ（ノード高さ45px + 余白）
-        const requiredHeightPerNode = 80;
-        const requiredCanvasH = Math.max(350, (maxNodesInLayer + 1) * requiredHeightPerNode);
-
         for(let l = 0; l <= maxLayer; l++) {
             if(!layerCounts[l]) continue;
             let nList = layerCounts[l];
-            let spacingY = requiredCanvasH / (nList.length + 1);
-            nList.forEach((type, idx) => { positions[type] = { x: spacingX * (l + 1), y: spacingY * (idx + 1) }; });
+            let spacingX = canvasW / (nList.length + 1); // X軸は横並び
+            nList.forEach((type, idx) => { 
+                positions[type] = { 
+                    x: spacingX * (idx + 1), 
+                    y: spacingY * (l + 1) 
+                }; 
+            });
         }
-        
         return { positions, requiredCanvasH };
     }
 
@@ -334,9 +327,8 @@
         canvas.querySelectorAll('.aws-slot, .aws-node').forEach(e => e.remove());
         
         const canvasW = canvas.clientWidth || 300;
-        
-        // ★ 動的にキャンバスの高さを計算・設定
         const layout = calculateNodePositions(currentPuzzle.correctNodes, currentPuzzle.correctLinks, canvasW);
+        
         canvas.style.height = `${layout.requiredCanvasH}px`;
         
         slotData = currentPuzzle.correctNodes.map((type, i) => {
@@ -454,7 +446,7 @@
             if (!isCorrect) {
                 correctArea.classList.remove('hidden'); drawCorrectArchitecture();
                 document.getElementById('ans-desc').innerText = "【下の正解プレビューを確認してください】\n\n" + currentPuzzle.explanation;
-                // 不正解後、キャンバスは触れないようにするがスクロールはできるようにする
+                document.getElementById('canvas-area').style.pointerEvents = 'none';
             } else {
                 correctArea.classList.add('hidden'); document.getElementById('ans-desc').innerText = currentPuzzle.explanation;
             }
@@ -488,8 +480,7 @@
         const canvasW = canvas.clientWidth || 300;
         const layout = calculateNodePositions(currentPuzzle.correctNodes, currentPuzzle.correctLinks, canvasW);
         
-        // プレビューエリアも動的な高さにする
-        canvas.style.height = `${Math.max(200, layout.requiredCanvasH * 0.8)}px`; 
+        canvas.style.height = `${Math.max(250, layout.requiredCanvasH * 0.85)}px`; 
 
         currentPuzzle.correctNodes.forEach(nodeType => {
             const p = layout.positions[nodeType];
