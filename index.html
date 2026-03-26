@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AWS SAA Puzzle | ADVANCED ROUTING EDITION</title>
+    <title>AWS SAA Puzzle | MOBILE OPTIMIZED EDITION</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -32,29 +32,29 @@
 
         .controls-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: #eee; border: 2px solid #ccc; font-weight: bold; color: var(--primary); font-size: 14px;}
 
-        #canvas-area { position: relative; width: 100%; height: 350px; background: #fdfdfd; border: 4px dashed #333; margin-bottom: 20px; overflow: hidden; touch-action: none; }
+        /* キャンバス全体のスクロールを許可 (touch-action: auto または noneを外す) */
+        #canvas-area { position: relative; width: 100%; min-height: 400px; background: #fdfdfd; border: 4px dashed #333; margin-bottom: 20px; overflow: hidden; touch-action: pan-y; }
         #links-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
 
-        /* 文字が長くなっても収まるように微調整 */
         .aws-slot {
             position: absolute; width: 95px; height: 45px; border: 3px dashed #888; background: var(--slot-bg);
             border-radius: 4px; transform: translate(-50%, -50%); z-index: 2; display: flex; align-items: center; justify-content: center;
-            color: #888; font-weight: bold; font-size: 12px;
+            color: #888; font-weight: bold; font-size: 12px; pointer-events: none; /* スロット自体はタッチイベントを透過 */
         }
 
+        /* ノードだけはドラッグのために touch-action: none を設定 */
         .aws-node {
             position: absolute; width: 95px; height: 45px; background: white; border: 3px solid black; color: black;
-            font-weight: bold; font-size: 10px; display: flex; align-items: center; justify-content: center; text-align: center;
+            font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; text-align: center;
             box-shadow: 4px 4px 0 rgba(0,0,0,0.2); cursor: grab; transform: translate(-50%, -50%); touch-action: none; z-index: 10;
-            line-height: 1.2; padding: 2px; box-sizing: border-box;
         }
         .aws-node:active { cursor: grabbing; box-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
 
         .palette { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-        .palette-item { border: 3px solid black; font-weight: 900; cursor: grab; padding: 8px 12px; background: white; color: black; transform: skew(-5deg); box-shadow: 3px 3px 0 #ccc; touch-action: none; font-size: 11px; line-height: 1.2; text-align: center;}
+        .palette-item { border: 3px solid black; font-weight: 900; cursor: grab; padding: 10px 15px; background: white; color: black; transform: skew(-5deg); box-shadow: 3px 3px 0 #ccc; touch-action: none; font-size: 12px; }
         .palette-item:active { cursor: grabbing; box-shadow: none; transform: skew(-5deg) translate(2px,2px); }
 
-        .drag-ghost { position: fixed; width: 95px; height: 45px; background: rgba(255,255,255,0.9); border: 3px solid black; font-weight: bold; font-size: 10px; display: flex; align-items: center; justify-content: center; text-align: center; box-shadow: 8px 8px 0 rgba(211,18,18,0.5); transform: translate(-50%, -50%) scale(1.1); pointer-events: none; z-index: 9999; line-height: 1.2; padding: 2px; box-sizing: border-box;}
+        .drag-ghost { position: fixed; width: 95px; height: 45px; background: rgba(255,255,255,0.9); border: 3px solid black; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; text-align: center; box-shadow: 8px 8px 0 rgba(211,18,18,0.5); transform: translate(-50%, -50%) scale(1.1); pointer-events: none; z-index: 9999; }
 
         .menu-btn { border: 3px solid black; font-weight: 900; cursor: pointer; transition: 0.1s; padding: 15px; background: white; color: black; transform: skew(-5deg); width: 100%; margin-bottom: 15px; font-size: 14px; text-align: left; }
         .menu-btn:hover { background: var(--primary); color: white; transform: translate(-3px, -3px) skew(-5deg); box-shadow: 6px 6px 0 black; }
@@ -67,7 +67,10 @@
         .hidden { display: none !important; }
 
         .explanation-text { font-size: 14px; line-height: 1.6; margin-top: 15px; font-weight: bold; color: inherit; white-space: pre-wrap; text-align: left;}
-        .aws-node-mini { position: absolute; width: 85px; height: 40px; background: white; border: 3px solid var(--success); color: black; font-weight: bold; font-size: 9px; text-align: center; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); pointer-events: none; box-shadow: 2px 2px 0 #ccc; line-height: 1.2; padding: 2px; box-sizing: border-box;}
+        
+        /* プレビューエリアも動的な高さに対応させる */
+        #correct-canvas { position: relative; width: 100%; min-height: 250px; background: #fdfdfd; border: 2px dashed #ccc; overflow: hidden; }
+        .aws-node-mini { position: absolute; width: 85px; height: 40px; background: white; border: 3px solid var(--success); color: black; font-weight: bold; font-size: 10px; text-align: center; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); pointer-events: none; box-shadow: 2px 2px 0 #ccc; }
 
         .timer-container { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: #000; border-top: 4px solid var(--primary); display: flex; align-items: center; justify-content: center; z-index: 100; box-shadow: 0 -5px 15px rgba(211,18,18,0.2); }
         .timer-bar { position: absolute; top: 0; left: 0; height: 100%; background: var(--primary); width: 100%; opacity: 0.5; }
@@ -104,7 +107,7 @@
     </header>
 
     <div id="main-menu-screen" class="card">
-        <h1>AWS SAA パズル演習</h1>
+        <h1>AWS SAA パズル演習 (全100問)</h1>
         <div style="font-weight: bold; margin-bottom: 20px;">制限時間：各問 90秒</div>
         <div id="loading-screen">CSVデータを読み込み中...</div>
         <div id="puzzle-list"></div>
@@ -137,7 +140,7 @@
             
             <div id="correct-answer-area" class="hidden" style="margin-top: 20px; text-align: left; background: #fff; padding: 10px; border: 4px solid var(--success);">
                 <h3 style="margin-top: 0; margin-bottom: 10px; color: var(--success); font-size: 16px;">【正解の構成例】</h3>
-                <div id="correct-canvas" style="position: relative; width: 100%; height: 200px; background: #fdfdfd; border: 2px dashed #ccc; overflow: hidden;">
+                <div id="correct-canvas">
                     <svg id="correct-links-svg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></svg>
                 </div>
             </div>
@@ -238,8 +241,9 @@
         document.getElementById('result-box').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('shake');
         document.getElementById('submit-btn').disabled = false;
-        document.getElementById('canvas-area').style.pointerEvents = 'auto';
-
+        
+        // ★ キャンバス内のスクロール制御はCSSで行うため、JS制御は削除
+        
         setupCanvas(); renderPalette(); startBGM(); startTimer();
     }
 
@@ -259,7 +263,8 @@
     }
     function stopTimer() { cancelAnimationFrame(timerInterval); document.getElementById('timer-ui').classList.add('hidden'); }
 
-    function calculateNodePositions(nodes, links, canvasW, canvasH) {
+    // ★ 重なり防止・スマホ対応のレイアウト計算
+    function calculateNodePositions(nodes, links, canvasW) {
         let inDegree = {}; let adj = {};
         nodes.forEach(n => { inDegree[n] = 0; adj[n] = []; });
         links.forEach(l => { if(adj[l.from]) adj[l.from].push(l.to); if(inDegree[l.to] !== undefined) inDegree[l.to]++; });
@@ -281,15 +286,28 @@
             if(!layerCounts[l]) layerCounts[l] = []; layerCounts[l].push(n);
         });
         
+        // ★ X軸の計算（横幅）
         const spacingX = canvasW / (maxLayer + 2);
         let positions = {};
+        
+        // ★ スマホ等で画面幅が狭く、縦に多くのノードが並ぶ場合にキャンバスの高さを拡張する
+        let maxNodesInLayer = 0;
+        for(let l=0; l <= maxLayer; l++) {
+            if(layerCounts[l] && layerCounts[l].length > maxNodesInLayer) maxNodesInLayer = layerCounts[l].length;
+        }
+        
+        // 1つのノードあたり必要な高さ（ノード高さ45px + 余白）
+        const requiredHeightPerNode = 80;
+        const requiredCanvasH = Math.max(350, (maxNodesInLayer + 1) * requiredHeightPerNode);
+
         for(let l = 0; l <= maxLayer; l++) {
             if(!layerCounts[l]) continue;
             let nList = layerCounts[l];
-            let spacingY = canvasH / (nList.length + 1);
+            let spacingY = requiredCanvasH / (nList.length + 1);
             nList.forEach((type, idx) => { positions[type] = { x: spacingX * (l + 1), y: spacingY * (idx + 1) }; });
         }
-        return positions;
+        
+        return { positions, requiredCanvasH };
     }
 
     function drawLinkLine(svg, s1, s2, color, isDashed) {
@@ -315,11 +333,14 @@
         const canvas = document.getElementById('canvas-area');
         canvas.querySelectorAll('.aws-slot, .aws-node').forEach(e => e.remove());
         
-        const canvasW = canvas.clientWidth || 300; const canvasH = canvas.clientHeight || 350;
-        const positions = calculateNodePositions(currentPuzzle.correctNodes, currentPuzzle.correctLinks, canvasW, canvasH);
+        const canvasW = canvas.clientWidth || 300;
+        
+        // ★ 動的にキャンバスの高さを計算・設定
+        const layout = calculateNodePositions(currentPuzzle.correctNodes, currentPuzzle.correctLinks, canvasW);
+        canvas.style.height = `${layout.requiredCanvasH}px`;
         
         slotData = currentPuzzle.correctNodes.map((type, i) => {
-            let p = positions[type]; return { id: `slot-${i}`, x: p.x, y: p.y, expectedType: type, placedType: null };
+            let p = layout.positions[type]; return { id: `slot-${i}`, x: p.x, y: p.y, expectedType: type, placedType: null };
         });
 
         slotData.forEach(slot => {
@@ -433,7 +454,7 @@
             if (!isCorrect) {
                 correctArea.classList.remove('hidden'); drawCorrectArchitecture();
                 document.getElementById('ans-desc').innerText = "【下の正解プレビューを確認してください】\n\n" + currentPuzzle.explanation;
-                document.getElementById('canvas-area').style.pointerEvents = 'none';
+                // 不正解後、キャンバスは触れないようにするがスクロールはできるようにする
             } else {
                 correctArea.classList.add('hidden'); document.getElementById('ans-desc').innerText = currentPuzzle.explanation;
             }
@@ -464,18 +485,21 @@
         canvas.querySelectorAll('.aws-node-mini').forEach(n => n.remove());
         svg.innerHTML = `<defs><marker id="arrow-mini" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--success)" /></marker></defs>`;
 
-        const canvasW = canvas.clientWidth || 300; const canvasH = canvas.clientHeight || 200;
-        const positions = calculateNodePositions(currentPuzzle.correctNodes, currentPuzzle.correctLinks, canvasW, canvasH);
+        const canvasW = canvas.clientWidth || 300;
+        const layout = calculateNodePositions(currentPuzzle.correctNodes, currentPuzzle.correctLinks, canvasW);
+        
+        // プレビューエリアも動的な高さにする
+        canvas.style.height = `${Math.max(200, layout.requiredCanvasH * 0.8)}px`; 
 
         currentPuzzle.correctNodes.forEach(nodeType => {
-            const p = positions[nodeType];
+            const p = layout.positions[nodeType];
             const el = document.createElement('div'); el.className = 'aws-node-mini'; el.innerText = nodeType;
             el.style.left = `${p.x}px`; el.style.top = `${p.y}px`; el.style.borderBottom = `4px solid ${getAwsColor(nodeType)}`;
             canvas.appendChild(el);
         });
 
         currentPuzzle.correctLinks.forEach(link => {
-            const p1 = positions[link.from]; const p2 = positions[link.to];
+            const p1 = layout.positions[link.from]; const p2 = layout.positions[link.to];
             if (p1 && p2) drawLinkLine(svg, p1, p2, 'var(--success)', false);
         });
     }
