@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS SAA Puzzle | ADVANCED ROUTING EDITION</title>
+    <link rel="icon" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        :root { --primary: #D31212; --bg: #121212; --card: #FFFFFF; --text: #000000; --success: #28a745; --slot-bg: #f0f0f0; }
+
+        body { 
+            font-family: 'Arial Black', 'Helvetica Neue', 'Hiragino Sans', sans-serif; 
+            background-color: var(--bg); background-image: radial-gradient(circle at 10% 20%, rgba(211, 18, 18, 0.15) 0%, transparent 40%);
+            margin: 0; display: flex; justify-content: center; color: white;
+            user-select: none; -webkit-user-select: none; padding: 20px 0; padding-bottom: 80px; overflow-x: hidden;
+        }
+
+        .container { width: 100%; max-width: 650px; padding: 0 20px; position: relative; }
+        .app-header { display: flex; justify-content: space-between; align-items: center; height: 50px; margin-bottom: 10px; }
+        .back-btn { background: white; color: black; border: 3px solid black; padding: 8px 18px; font-weight: bold; transform: skew(-15deg); cursor: pointer; box-shadow: 4px 4px 0 var(--primary); transition: 0.1s; }
+        .back-btn:hover { background: var(--primary); color: white; transform: skew(-15deg) translate(-2px, -2px); }
+        .settings-btn { width: 40px; height: 40px; background: white; border: 3px solid black; display: flex; align-items: center; justify-content: center; cursor: pointer; transform: rotate(5deg); box-shadow: 4px 4px 0 var(--primary); }
+        .settings-icon-bar, .settings-icon-bar::before, .settings-icon-bar::after { content: ""; width: 20px; height: 4px; background: black; position: absolute; }
+        .settings-icon-bar::before { top: -8px; } .settings-icon-bar::after { top: 8px; }
+
+        .card { background: var(--card); color: var(--text); padding: 20px; box-shadow: 10px 10px 0px var(--primary); border: 4px solid black; position: relative; }
+        h1 { background: black; color: white; display: inline-block; padding: 5px 20px; transform: rotate(-2deg); font-size: 20px; margin-top: 0; margin-bottom: 15px; }
+        #q-text { font-size: 14px; font-weight: 900; line-height: 1.6; border-left: 8px solid var(--primary); padding-left: 15px; margin-bottom: 15px; }
+
+        .controls-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: #eee; border: 2px solid #ccc; font-weight: bold; color: var(--primary); font-size: 14px;}
+
+        #canvas-area { position: relative; width: 100%; height: 350px; background: #fdfdfd; border: 4px dashed #333; margin-bottom: 20px; overflow: hidden; touch-action: none; }
+        #links-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+
+        /* 文字が長くなっても収まるように微調整 */
+        .aws-slot {
+            position: absolute; width: 95px; height: 45px; border: 3px dashed #888; background: var(--slot-bg);
+            border-radius: 4px; transform: translate(-50%, -50%); z-index: 2; display: flex; align-items: center; justify-content: center;
+            color: #888; font-weight: bold; font-size: 12px;
+        }
+
+        .aws-node {
+            position: absolute; width: 95px; height: 45px; background: white; border: 3px solid black; color: black;
+            font-weight: bold; font-size: 10px; display: flex; align-items: center; justify-content: center; text-align: center;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.2); cursor: grab; transform: translate(-50%, -50%); touch-action: none; z-index: 10;
+            line-height: 1.2; padding: 2px; box-sizing: border-box;
+        }
+        .aws-node:active { cursor: grabbing; box-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
+
+        .palette { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+        .palette-item { border: 3px solid black; font-weight: 900; cursor: grab; padding: 8px 12px; background: white; color: black; transform: skew(-5deg); box-shadow: 3px 3px 0 #ccc; touch-action: none; font-size: 11px; line-height: 1.2; text-align: center;}
+        .palette-item:active { cursor: grabbing; box-shadow: none; transform: skew(-5deg) translate(2px,2px); }
+
+        .drag-ghost { position: fixed; width: 95px; height: 45px; background: rgba(255,255,255,0.9); border: 3px solid black; font-weight: bold; font-size: 10px; display: flex; align-items: center; justify-content: center; text-align: center; box-shadow: 8px 8px 0 rgba(211,18,18,0.5); transform: translate(-50%, -50%) scale(1.1); pointer-events: none; z-index: 9999; line-height: 1.2; padding: 2px; box-sizing: border-box;}
+
+        .menu-btn { border: 3px solid black; font-weight: 900; cursor: pointer; transition: 0.1s; padding: 15px; background: white; color: black; transform: skew(-5deg); width: 100%; margin-bottom: 15px; font-size: 14px; text-align: left; }
+        .menu-btn:hover { background: var(--primary); color: white; transform: translate(-3px, -3px) skew(-5deg); box-shadow: 6px 6px 0 black; }
+        .menu-btn.primary { background: var(--primary); color: white; box-shadow: 4px 4px 0 black; font-size: 18px; text-align: center; }
+        .menu-btn.small { padding: 6px 12px; font-size: 12px; box-shadow: 2px 2px 0 black; width: auto; margin: 0;}
+
+        .result { margin-top: 25px; padding: 20px; border: 4px solid black; font-weight: 900; }
+        .correct { border-color: var(--success); color: var(--success); }
+        .wrong { background: black; color: white; border-color: var(--primary); }
+        .hidden { display: none !important; }
+
+        .explanation-text { font-size: 14px; line-height: 1.6; margin-top: 15px; font-weight: bold; color: inherit; white-space: pre-wrap; text-align: left;}
+        .aws-node-mini { position: absolute; width: 85px; height: 40px; background: white; border: 3px solid var(--success); color: black; font-weight: bold; font-size: 9px; text-align: center; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); pointer-events: none; box-shadow: 2px 2px 0 #ccc; line-height: 1.2; padding: 2px; box-sizing: border-box;}
+
+        .timer-container { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: #000; border-top: 4px solid var(--primary); display: flex; align-items: center; justify-content: center; z-index: 100; box-shadow: 0 -5px 15px rgba(211,18,18,0.2); }
+        .timer-bar { position: absolute; top: 0; left: 0; height: 100%; background: var(--primary); width: 100%; opacity: 0.5; }
+
+        #settings-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 500; }
+        .modal-content { background: black; padding: 30px; border: 5px solid white; width: 85%; max-width: 320px; text-align: center; color: white; transform: rotate(-2deg); box-shadow: 10px 10px 0 black; }
+        .volume-control { margin: 25px 0; text-align: left; } .volume-label { font-size: 14px; font-weight: 900; margin-bottom: 10px; display: block; letter-spacing: 2px; }
+        .slider { appearance: none; -webkit-appearance: none; width: 100%; height: 8px; background: #444; outline: none; border: 2px solid white; }
+        .slider::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 20px; height: 20px; background: white; cursor: pointer; border: 3px solid var(--primary); border-radius: 50%; }
+
+        .correct-anime { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 250px; height: 250px; border: 25px solid var(--success); border-radius: 50%; pointer-events: none; z-index: 1000; opacity: 0; }
+        .run-anime { animation: p5-circle 0.4s ease-out forwards; } @keyframes p5-circle { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 50% { opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1.3); opacity: 0; } }
+        .shake { animation: shake 0.2s ease-in-out 0s 2; border: 6px solid var(--primary); transform: translateZ(0); } @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        #loading-screen { text-align: center; padding: 50px 0; font-weight: bold; font-size: 18px; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<div id="circle-anime" class="correct-anime"></div>
+
+<div id="settings-modal" onclick="closeSettings()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h2 style="font-size: 30px; margin-bottom: 30px; font-weight: 900;">CONFIG</h2>
+        <div class="volume-control"><span class="volume-label">BGM VOLUME</span><input type="range" min="0" max="1" step="0.01" value="0.08" class="slider" oninput="updateBgmVolume(this.value)"></div>
+        <div class="volume-control"><span class="volume-label">SE VOLUME</span><input type="range" min="0" max="1" step="0.01" value="0.5" class="slider" oninput="updateSeVolume(this.value)"></div>
+        <button class="menu-btn primary" style="margin-top:20px" onclick="clickWrapper(() => closeSettings())">RESUME</button>
+    </div>
+</div>
+
+<div class="container">
+    <header class="app-header">
+        <button id="back-btn" class="back-btn hidden" onclick="clickWrapper(backToMenu)">◀ BACK</button>
+        <button class="settings-btn" style="margin-left: auto;" onclick="clickWrapper(() => openSettings())"><div class="settings-icon-bar"></div></button>
+    </header>
+
+    <div id="main-menu-screen" class="card">
+        <h1>AWS SAA パズル演習</h1>
+        <div style="font-weight: bold; margin-bottom: 20px;">制限時間：各問 90秒</div>
+        <div id="loading-screen">CSVデータを読み込み中...</div>
+        <div id="puzzle-list"></div>
+    </div>
+
+    <div id="quiz-screen" class="card hidden">
+        <h1 id="puzzle-title">タイトル</h1>
+        <div id="q-text">問題文</div>
+        
+        <div class="controls-area">
+            <span>▶ サービスをスロットへドラッグ</span>
+            <button class="menu-btn small" onclick="clickWrapper(clearCanvasNodes)">クリア</button>
+        </div>
+
+        <div id="canvas-area">
+            <svg id="links-svg">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#888" /></marker>
+                    <marker id="arrow-mini" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--success)" /></marker>
+                </defs>
+            </svg>
+        </div>
+
+        <div id="service-palette" class="palette"></div>
+        <button id="submit-btn" class="menu-btn primary" onclick="submitPuzzle()">SUBMIT ARCHITECTURE</button>
+
+        <div id="result-box" class="result hidden">
+            <div id="ans-status" style="font-size:24px; text-align: center;"></div>
+            <div id="ans-desc" class="explanation-text"></div>
+            
+            <div id="correct-answer-area" class="hidden" style="margin-top: 20px; text-align: left; background: #fff; padding: 10px; border: 4px solid var(--success);">
+                <h3 style="margin-top: 0; margin-bottom: 10px; color: var(--success); font-size: 16px;">【正解の構成例】</h3>
+                <div id="correct-canvas" style="position: relative; width: 100%; height: 200px; background: #fdfdfd; border: 2px dashed #ccc; overflow: hidden;">
+                    <svg id="correct-links-svg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></svg>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 25px;">
+                <button id="retry-btn-result" class="menu-btn" style="background: white; color: black; margin-bottom: 0;" onclick="clickWrapper(retryPuzzle)">もう一度</button>
+                <button id="next-btn" class="menu-btn primary hidden" style="margin-bottom: 0;" onclick="clickWrapper(nextPuzzle)">次の問題へ</button>
+                <button id="menu-btn-result" class="menu-btn primary" style="margin-bottom: 0;" onclick="clickWrapper(backToMenu)">メニューへ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="timer-ui" class="timer-container hidden">
+    <div id="timer-bar" class="timer-bar"></div>
+    <div style="position:relative; font-size:28px; font-weight:900;"><span id="timer-label">TIME:</span> <span id="timer-num">90.0</span></div>
+</div>
+
+<script>
+    const awsColors = {
+        "EC2": "#E86F21", "Lambda": "#E86F21", "ALB": "#E86F21", "ECS": "#E86F21", "Fargate": "#E86F21", "Auto Scaling": "#E86F21", "EKS": "#E86F21", "Elastic Beanstalk": "#E86F21",
+        "S3": "#448123", "EFS": "#448123", "EBS": "#448123", "Storage Gateway": "#448123", "Backup": "#448123", "Snowball": "#448123", "DataSync": "#448123",
+        "RDS": "#3355DA", "DynamoDB": "#3355DA", "Aurora": "#3355DA", "ElastiCache": "#3355DA", "Redshift": "#3355DA", "DAX": "#3355DA", "RDS Proxy": "#3355DA", "Neptune": "#3355DA",
+        "VPC": "#693CC5", "CloudFront": "#693CC5", "Route 53": "#693CC5", "API Gateway": "#693CC5", "Global Accelerator": "#693CC5", "Direct Connect": "#693CC5", "Transit Gateway": "#693CC5", "VPC Endpoint": "#693CC5", "NAT Gateway": "#693CC5", "VPN": "#693CC5", "Internet Gateway": "#693CC5", "AppSync": "#693CC5",
+        "IAM": "#CC2264", "KMS": "#CC2264", "WAF": "#CC2264", "Cognito": "#CC2264", "Secrets Manager": "#CC2264", "Shield": "#CC2264", "Macie": "#CC2264", "GuardDuty": "#CC2264", "Certificate Manager": "#CC2264",
+        "CloudWatch": "#E7157B", "CloudTrail": "#E7157B", "Systems Manager": "#E7157B", "Config": "#E7157B",
+        "SQS": "#E7157B", "SNS": "#E7157B", "EventBridge": "#E7157B", "Step Functions": "#E7157B", "MQ": "#E7157B",
+        "Kinesis": "#6B49AE", "Firehose": "#6B49AE", "Athena": "#6B49AE", "Glue": "#6B49AE", "EMR": "#6B49AE", "OpenSearch": "#6B49AE", "IoT Core": "#6B49AE"
+    };
+    function getAwsColor(s) { 
+        let base = s.replace(/\s*\d+$/, '').replace(/\s*\(.*$/, '').trim();
+        return awsColors[base] || "#555555"; 
+    }
+
+    let puzzles = []; let currentPuzzle = null;
+    let slotData = []; let dragData = null;
+    const TIME_LIMIT = 90; let timerInterval; let timeLeft = TIME_LIMIT;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        initAudio(); document.addEventListener('pointermove', onPointerMove); document.addEventListener('pointerup', onPointerUp); loadCSV();
+    });
+
+    function loadCSV() {
+        Papa.parse('questions/question.csv', {
+            download: true, header: true, skipEmptyLines: true,
+            complete: function(res) {
+                document.getElementById('loading-screen').classList.add('hidden');
+                puzzles = res.data.map((row, i) => ({
+                    id: `q${i + 1}`, title: row.title, question: row.question,
+                    palette: row.palette.split('|').map(s => s.trim()),
+                    correctNodes: row.correctNodes.split('|').map(s => s.trim()),
+                    correctLinks: row.correctLinks ? row.correctLinks.split('|').map(l => {
+                        const p = l.split('>'); return { from: p[0].trim(), to: p[1].trim() };
+                    }) : [],
+                    explanation: row.explanation.replace(/\\n/g, '\n')
+                }));
+                initMenu();
+            },
+            error: function() { document.getElementById('loading-screen').innerText = "CSVの読み込みに失敗しました。"; }
+        });
+    }
+
+    let audioCtx = null; const soundBuffers = {}; let bgmVolume = 0.08; let seVolume = 0.5; let bgmSource = null; let bgmGainNode = null; let audioInitialized = false;
+    function initAudio() {
+        if (audioInitialized) return; audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        ['bgm', 'correct', 'wrong', 'select'].forEach(name => {
+            let url = name === 'bgm' ? './assets/sounds/BGM/persona5_style_music.mp3' : name === 'wrong' ? './assets/sounds/SE/noncorrect.mp3' : `./assets/sounds/SE/${name}.mp3`;
+            loadSound(name, url);
+        });
+        audioInitialized = true;
+    }
+    async function loadSound(name, url) { try { const res = await fetch(url); soundBuffers[name] = await audioCtx.decodeAudioData(await res.arrayBuffer()); } catch(e){} }
+    const unlockAudio = () => { if (!audioInitialized) initAudio(); if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); };
+    document.addEventListener('pointerdown', unlockAudio, { once: true });
+    function playSE(name) { if (!audioCtx || !soundBuffers[name]) return; if (audioCtx.state === 'suspended') audioCtx.resume(); const src = audioCtx.createBufferSource(); src.buffer = soundBuffers[name]; const gain = audioCtx.createGain(); gain.gain.value = seVolume; src.connect(gain).connect(audioCtx.destination); src.start(0); }
+    function clickWrapper(cb) { unlockAudio(); playSE('select'); if (cb) setTimeout(cb, 10); }
+    function startBGM() { if (bgmVolume === 0 || !soundBuffers['bgm'] || bgmSource) return; if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); bgmSource = audioCtx.createBufferSource(); bgmSource.buffer = soundBuffers['bgm']; bgmSource.loop = true; bgmGainNode = audioCtx.createGain(); bgmGainNode.gain.value = bgmVolume; bgmSource.connect(bgmGainNode).connect(audioCtx.destination); bgmSource.start(0); }
+    function stopBGM() { if (bgmSource) { try { bgmSource.stop(); } catch(e){} bgmSource = null; bgmGainNode = null; } }
+    function updateBgmVolume(val) { bgmVolume = parseFloat(val); if (bgmGainNode) bgmGainNode.gain.value = bgmVolume; if (bgmVolume > 0 && !bgmSource && !document.getElementById('quiz-screen').classList.contains('hidden')) startBGM(); else if (bgmVolume === 0) stopBGM(); }
+    function updateSeVolume(val) { seVolume = parseFloat(val); }
+    function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
+    function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
+
+    function initMenu() {
+        const list = document.getElementById('puzzle-list'); list.innerHTML = '';
+        puzzles.forEach((p, idx) => {
+            const btn = document.createElement('button'); btn.className = 'menu-btn'; btn.innerText = `Q${idx + 1}：${p.title}`;
+            btn.onclick = () => clickWrapper(() => startPuzzle(idx)); list.appendChild(btn);
+        });
+    }
+
+    function startPuzzle(index) {
+        currentPuzzle = puzzles[index];
+        document.getElementById('main-menu-screen').classList.add('hidden'); document.getElementById('quiz-screen').classList.remove('hidden'); document.getElementById('back-btn').classList.remove('hidden');
+        document.getElementById('puzzle-title').innerText = currentPuzzle.title;
+        document.getElementById('q-text').innerText = currentPuzzle.question;
+        
+        document.getElementById('result-box').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('shake');
+        document.getElementById('submit-btn').disabled = false;
+        document.getElementById('canvas-area').style.pointerEvents = 'auto';
+
+        setupCanvas(); renderPalette(); startBGM(); startTimer();
+    }
+
+    function retryPuzzle() { stopTimer(); startPuzzle(puzzles.indexOf(currentPuzzle)); }
+    function nextPuzzle() { let idx = puzzles.indexOf(currentPuzzle); if (idx + 1 < puzzles.length) { stopTimer(); startPuzzle(idx + 1); } }
+    function backToMenu() { stopTimer(); stopBGM(); document.getElementById('quiz-screen').classList.add('hidden'); document.getElementById('main-menu-screen').classList.remove('hidden'); document.getElementById('back-btn').classList.add('hidden'); }
+
+    function startTimer() {
+        stopTimer();
+        timeLeft = TIME_LIMIT; document.getElementById('timer-ui').classList.remove('hidden'); const start = performance.now();
+        function update(now) {
+            timeLeft = Math.max(0, TIME_LIMIT - ((now - start) / 1000));
+            document.getElementById('timer-num').innerText = timeLeft.toFixed(1); document.getElementById('timer-bar').style.width = (timeLeft / TIME_LIMIT * 100) + "%";
+            if (timeLeft > 0) timerInterval = requestAnimationFrame(update); else submitPuzzle(true);
+        }
+        timerInterval = requestAnimationFrame(update);
+    }
+    function stopTimer() { cancelAnimationFrame(timerInterval); document.getElementById('timer-ui').classList.add('hidden'); }
+
+    function calculateNodePositions(nodes, links, canvasW, canvasH) {
+        let inDegree = {}; let adj = {};
+        nodes.forEach(n => { inDegree[n] = 0; adj[n] = []; });
+        links.forEach(l => { if(adj[l.from]) adj[l.from].push(l.to); if(inDegree[l.to] !== undefined) inDegree[l.to]++; });
+        
+        let queue = []; let layerMap = {};
+        nodes.forEach(n => { if(inDegree[n] === 0) { queue.push(n); layerMap[n] = 0; } });
+        while(queue.length > 0) {
+            let u = queue.shift();
+            adj[u].forEach(v => {
+                layerMap[v] = Math.max(layerMap[v] || 0, layerMap[u] + 1);
+                inDegree[v]--; if(inDegree[v] === 0) queue.push(v);
+            });
+        }
+        nodes.forEach(n => { if(layerMap[n] === undefined) layerMap[n] = 0; });
+        
+        let maxLayer = 0; let layerCounts = {};
+        nodes.forEach(n => {
+            let l = layerMap[n]; maxLayer = Math.max(maxLayer, l);
+            if(!layerCounts[l]) layerCounts[l] = []; layerCounts[l].push(n);
+        });
+        
+        const spacingX = canvasW / (maxLayer + 2);
+        let positions = {};
+        for(let l = 0; l <= maxLayer; l++) {
+            if(!layerCounts[l]) continue;
+            let nList = layerCounts[l];
+            let spacingY = canvasH / (nList.length + 1);
+            nList.forEach((type, idx) => { positions[type] = { x: spacingX * (l + 1), y: spacingY * (idx + 1) }; });
+        }
+        return positions;
+    }
+
+    function drawLinkLine(svg, s1, s2, color, isDashed) {
+        let dx = s2.x - s1.x; let dy = s2.y - s1.y; let angle = Math.atan2(dy, dx);
+        let w = 47.5, h = 22.5; 
+        let absCos = Math.abs(Math.cos(angle)); let absSin = Math.abs(Math.sin(angle));
+        let dist1 = (absCos * h > absSin * w) ? (w / absCos) : (h / absSin);
+        
+        let fromX = s1.x + dist1 * Math.cos(angle); let fromY = s1.y + dist1 * Math.sin(angle);
+        let dist2 = dist1 + 8; 
+        let toX = s2.x - dist2 * Math.cos(angle); let toY = s2.y - dist2 * Math.sin(angle);
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', fromX); line.setAttribute('y1', fromY);
+        line.setAttribute('x2', toX); line.setAttribute('y2', toY);
+        line.setAttribute('stroke', color); line.setAttribute('stroke-width', '4');
+        if (color === '#888') line.setAttribute('marker-end', 'url(#arrow)'); else line.setAttribute('marker-end', 'url(#arrow-mini)');
+        if (isDashed) line.setAttribute('stroke-dasharray', '4');
+        svg.appendChild(line);
+    }
+
+    function setupCanvas() {
+        const canvas = document.getElementById('canvas-area');
+        canvas.querySelectorAll('.aws-slot, .aws-node').forEach(e => e.remove());
+        
+        const canvasW = canvas.clientWidth || 300; const canvasH = canvas.clientHeight || 350;
+        const positions = calculateNodePositions(currentPuzzle.correctNodes, currentPuzzle.correctLinks, canvasW, canvasH);
+        
+        slotData = currentPuzzle.correctNodes.map((type, i) => {
+            let p = positions[type]; return { id: `slot-${i}`, x: p.x, y: p.y, expectedType: type, placedType: null };
+        });
+
+        slotData.forEach(slot => {
+            const el = document.createElement('div'); el.className = 'aws-slot'; el.id = slot.id; el.style.left = `${slot.x}px`; el.style.top = `${slot.y}px`; el.innerText = "?";
+            canvas.appendChild(el);
+        });
+
+        const svg = document.getElementById('links-svg');
+        svg.innerHTML = `<defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#888" /></marker>
+        </defs>`;
+        
+        currentPuzzle.correctLinks.forEach(link => {
+            const s1 = slotData.find(s => s.expectedType === link.from);
+            const s2 = slotData.find(s => s.expectedType === link.to);
+            if (s1 && s2) drawLinkLine(svg, s1, s2, '#888', true);
+        });
+    }
+
+    function renderPalette() {
+        const palette = document.getElementById('service-palette'); palette.innerHTML = '';
+        currentPuzzle.palette.forEach(service => {
+            const btn = document.createElement('div'); btn.className = 'palette-item'; btn.innerText = service;
+            btn.style.borderBottom = `5px solid ${getAwsColor(service)}`;
+            btn.addEventListener('pointerdown', (e) => startDrag(e, 'palette', service, null));
+            palette.appendChild(btn);
+        });
+    }
+
+    function clearCanvasNodes() { slotData.forEach(s => s.placedType = null); document.querySelectorAll('.aws-node').forEach(e => e.remove()); }
+
+    function startDrag(e, source, type, sourceSlotId) {
+        if(e.button !== 0 && e.type.includes('mouse')) return; 
+        dragData = { source, type, sourceSlotId, startX: e.clientX, startY: e.clientY, currentX: e.clientX, currentY: e.clientY, ghostEl: null, isDragging: false };
+        e.currentTarget.setPointerCapture(e.pointerId);
+    }
+
+    function onPointerMove(e) {
+        if (!dragData) return;
+        dragData.currentX = e.clientX; dragData.currentY = e.clientY;
+        if (!dragData.isDragging && Math.hypot(dragData.currentX - dragData.startX, dragData.currentY - dragData.startY) > 5) {
+            dragData.isDragging = true;
+            const ghost = document.createElement('div'); ghost.className = 'drag-ghost'; ghost.innerText = dragData.type;
+            ghost.style.borderBottom = `5px solid ${getAwsColor(dragData.type)}`;
+            document.body.appendChild(ghost); dragData.ghostEl = ghost;
+            if (dragData.source === 'slot') {
+                const nodeEl = document.getElementById(`node-${dragData.sourceSlotId}`); if(nodeEl) nodeEl.remove();
+                const slot = slotData.find(s => s.id === dragData.sourceSlotId); if(slot) slot.placedType = null;
+            }
+        }
+        if (dragData.isDragging && dragData.ghostEl) { dragData.ghostEl.style.left = `${dragData.currentX}px`; dragData.ghostEl.style.top = `${dragData.currentY}px`; }
+    }
+
+    function onPointerUp(e) {
+        if (!dragData) return;
+        if (dragData.ghostEl) dragData.ghostEl.remove();
+        if (dragData.isDragging) {
+            let targetSlotId = null; const canvasRect = document.getElementById('canvas-area').getBoundingClientRect();
+            if (e.clientX >= canvasRect.left && e.clientX <= canvasRect.right && e.clientY >= canvasRect.top && e.clientY <= canvasRect.bottom) {
+                const canvasX = e.clientX - canvasRect.left; const canvasY = e.clientY - canvasRect.top;
+                for (let slot of slotData) { if (Math.hypot(slot.x - canvasX, slot.y - canvasY) < 40) { targetSlotId = slot.id; break; } }
+            }
+            if (targetSlotId) { placeNodeInSlot(targetSlotId, dragData.type); playSE('select'); } 
+        }
+        dragData = null;
+    }
+
+    function placeNodeInSlot(slotId, serviceType) {
+        const slot = slotData.find(s => s.id === slotId); if(!slot) return;
+        if (slot.placedType) { const oldNode = document.getElementById(`node-${slotId}`); if(oldNode) oldNode.remove(); }
+        slot.placedType = serviceType;
+        const canvas = document.getElementById('canvas-area'); const nodeEl = document.createElement('div');
+        nodeEl.className = 'aws-node'; nodeEl.id = `node-${slotId}`; nodeEl.innerText = serviceType;
+        nodeEl.style.left = `${slot.x}px`; nodeEl.style.top = `${slot.y}px`; nodeEl.style.borderBottom = `5px solid ${getAwsColor(serviceType)}`;
+        nodeEl.addEventListener('pointerdown', (e) => startDrag(e, 'slot', serviceType, slotId));
+        canvas.appendChild(nodeEl);
+    }
+
+    function submitPuzzle(isTimeUp = false) {
+        stopTimer(); document.getElementById('submit-btn').disabled = true; dragData = null;
+        
+        let userNodes = slotData.map(s => s.placedType).filter(Boolean);
+        let isCorrect = false;
+
+        if (userNodes.length === currentPuzzle.correctNodes.length) {
+            const isNodesCorrect = checkArraysMatch(currentPuzzle.correctNodes, userNodes);
+            
+            let userLinks = [];
+            currentPuzzle.correctLinks.forEach(link => {
+                const fromSlot = slotData.find(s => s.expectedType === link.from);
+                const toSlot = slotData.find(s => s.expectedType === link.to);
+                if (fromSlot && toSlot && fromSlot.placedType && toSlot.placedType) {
+                    userLinks.push({ from: fromSlot.placedType, to: toSlot.placedType });
+                }
+            });
+            const isLinksCorrect = checkLinksMatch(currentPuzzle.correctLinks, userLinks);
+            
+            isCorrect = isNodesCorrect && isLinksCorrect;
+        }
+
+        playSE(isCorrect ? 'correct' : 'wrong');
+
+        setTimeout(() => {
+            if (isCorrect) { const circle = document.getElementById('circle-anime'); circle.classList.add('run-anime'); setTimeout(() => circle.classList.remove('run-anime'), 500); } 
+            else { document.getElementById('quiz-screen').classList.add('shake'); setTimeout(() => document.getElementById('quiz-screen').classList.remove('shake'), 500); }
+
+            const rb = document.getElementById('result-box'); rb.classList.remove('hidden'); rb.className = `result ${isCorrect ? 'correct' : 'wrong'}`;
+            document.getElementById('ans-status').innerText = isCorrect ? "SUCCESS!!" : (isTimeUp ? "TIME UP..." : "FAILED..."); 
+            
+            const correctArea = document.getElementById('correct-answer-area');
+            if (!isCorrect) {
+                correctArea.classList.remove('hidden'); drawCorrectArchitecture();
+                document.getElementById('ans-desc').innerText = "【下の正解プレビューを確認してください】\n\n" + currentPuzzle.explanation;
+                document.getElementById('canvas-area').style.pointerEvents = 'none';
+            } else {
+                correctArea.classList.add('hidden'); document.getElementById('ans-desc').innerText = currentPuzzle.explanation;
+            }
+
+            let idx = puzzles.indexOf(currentPuzzle);
+            if (idx + 1 < puzzles.length) { document.getElementById('next-btn').classList.remove('hidden'); document.getElementById('menu-btn-result').classList.add('hidden'); } 
+            else { document.getElementById('next-btn').classList.add('hidden'); document.getElementById('menu-btn-result').classList.remove('hidden'); }
+        }, 10);
+    }
+
+    function checkArraysMatch(arr1, arr2) { 
+        if (arr1.length !== arr2.length) return false; 
+        return [...arr1].sort().every((val, i) => val === [...arr2].sort()[i]); 
+    }
+
+    function checkLinksMatch(reqLinks, userLinks) { 
+        if (reqLinks.length !== userLinks.length) return false; 
+        let uLinks = [...userLinks];
+        return reqLinks.every(req => {
+            const idx = uLinks.findIndex(user => user.from === req.from && user.to === req.to);
+            if (idx > -1) { uLinks.splice(idx, 1); return true; }
+            return false;
+        });
+    }
+
+    function drawCorrectArchitecture() {
+        const canvas = document.getElementById('correct-canvas'); const svg = document.getElementById('correct-links-svg');
+        canvas.querySelectorAll('.aws-node-mini').forEach(n => n.remove());
+        svg.innerHTML = `<defs><marker id="arrow-mini" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--success)" /></marker></defs>`;
+
+        const canvasW = canvas.clientWidth || 300; const canvasH = canvas.clientHeight || 200;
+        const positions = calculateNodePositions(currentPuzzle.correctNodes, currentPuzzle.correctLinks, canvasW, canvasH);
+
+        currentPuzzle.correctNodes.forEach(nodeType => {
+            const p = positions[nodeType];
+            const el = document.createElement('div'); el.className = 'aws-node-mini'; el.innerText = nodeType;
+            el.style.left = `${p.x}px`; el.style.top = `${p.y}px`; el.style.borderBottom = `4px solid ${getAwsColor(nodeType)}`;
+            canvas.appendChild(el);
+        });
+
+        currentPuzzle.correctLinks.forEach(link => {
+            const p1 = positions[link.from]; const p2 = positions[link.to];
+            if (p1 && p2) drawLinkLine(svg, p1, p2, 'var(--success)', false);
+        });
+    }
+</script>
+</body>
+</html>
