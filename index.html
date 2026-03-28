@@ -263,7 +263,7 @@
         <div class="volume-control"><span class="volume-label">BGM VOLUME</span><input type="range" min="0" max="1" step="0.01" value="0.08" class="slider" oninput="updateBgmVolume(this.value)"></div>
         <div class="volume-control"><span class="volume-label">SE VOLUME</span><input type="range" min="0" max="1" step="0.01" value="0.5" class="slider" oninput="updateSeVolume(this.value)"></div>
         
-        <button class="menu-btn" style="background: var(--gold); color: black; margin-top: 15px; margin-bottom: 25px; text-align: center;" onclick="clickWrapper(openGlossary)">📚 SAA用語集</button>
+        <button class="menu-btn" style="background: var(--gold); color: black; margin-top: 15px; margin-bottom: 25px; text-align: center;" onclick="clickWrapper(openGlossary)">Service Details</button>
 
         <button class="menu-btn primary" onclick="clickWrapper(() => closeSettings())">RESUME</button>
     </div>
@@ -290,9 +290,9 @@
     </header>
 
     <div id="main-menu-screen" class="card">
-        <h1>AWS SAA パズル演習</h1>
+        <h1>AWS SAA Puzzle</h1>
         <div style="font-weight: bold; margin-bottom: 20px;">制限時間：各問 90秒</div>
-        <div id="loading-screen">CSVデータを読み込み中...</div>
+        <div id="loading-screen">loading...</div>
         <div id="puzzle-list"></div>
     </div>
 
@@ -303,7 +303,7 @@
         <div class="controls-area">
             <span>▶ スロットへドラッグ（ユーザー起点）</span>
             <div style="display: flex; gap: 8px;">
-                <button id="hint-btn" class="menu-btn small" style="background: var(--gold); color: black;" onclick="clickWrapper(useHint)">💡 ヒント</button>
+                <button id="hint-btn" class="menu-btn small" style="background: var(--gold); color: black;" onclick="clickWrapper(useHint)">ヒント</button>
                 <button class="menu-btn small" onclick="clickWrapper(clearCanvasNodes)">クリア</button>
             </div>
         </div>
