@@ -3,108 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AWS SAA Puzzle | VERTICAL MOBILE EDITION</title>
+    <title>AWS SAA Puzzle | PERFECT EASTER EGG EDITION</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        :root { --primary: #D31212; --bg: #121212; --card: #FFFFFF; --text: #000000; --success: #28a745; --slot-bg: #f0f0f0; }
+        :root { 
+            --primary: #E50000; 
+            --bg: #111111;      
+            --card: #FFFFFF;    
+            --text: #000000; 
+            --success: #28a745; 
+            --gold: #FFCC00; 
+            --slot-bg: #f5f5f5;
+            --grad-color: rgba(229, 0, 0, 0.25); 
+        }
+
+        body.secret-mode {
+            --primary: #FF0040; 
+            --bg: #050005;      
+            --card: #1a001a;    
+            --text: #eeeeee;    
+            --success: #00ff40; 
+            --gold: #ff00ff;    
+            --slot-bg: #100010;
+            --grad-color: rgba(255, 0, 64, 0.3); 
+        }
+
+        body.theme-p3 {
+            --primary: #00A8FF; 
+            --bg: #001233;      
+            --card: #FFFFFF;    
+            --text: #000000; 
+            --success: #28a745; 
+            --gold: #FFCC00; 
+            --slot-bg: #e0f0ff;
+            --grad-color: rgba(0, 168, 255, 0.25);
+        }
+
+        body.theme-p4 {
+            --primary: #F3C623; 
+            --bg: #111111;      
+            --card: #FFFFFF;    
+            --text: #000000; 
+            --success: #28a745; 
+            --gold: #D31212; 
+            --slot-bg: #fffbe6;
+            --grad-color: rgba(243, 198, 35, 0.25);
+        }
 
         body { 
             font-family: 'Arial Black', 'Helvetica Neue', 'Hiragino Sans', sans-serif; 
-            background-color: var(--bg); background-image: radial-gradient(circle at 10% 20%, rgba(211, 18, 18, 0.15) 0%, transparent 40%);
+            background-color: var(--bg); 
+            background-image: radial-gradient(var(--grad-color) 15%, transparent 15%);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
             margin: 0; display: flex; justify-content: center; color: white;
             user-select: none; -webkit-user-select: none; padding: 20px 0; padding-bottom: 80px; overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+            position: relative;
+        }
+
+        body.secret-mode::before {
+            content: "";
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(45deg, #1a001a 25%, transparent 25%), 
+                linear-gradient(-45deg, #1a001a 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #1a001a 75%),
+                linear-gradient(-45deg, transparent 75%, #1a001a 75%);
+            background-size: 100px 100px;
+            background-position: 0 0, 0 50px, 50px 50px, 50px 0;
+            opacity: 0.1;
+            animation: secret-bg-move 10s linear infinite;
+            z-index: -1;
+        }
+        @keyframes secret-bg-move {
+            0% { background-position: 0 0, 0 50px, 50px 50px, 50px 0; }
+            100% { background-position: 100px 100px, 100px 150px, 150px 150px, 150px 100px; }
         }
 
         .container { width: 100%; max-width: 650px; padding: 0 20px; position: relative; }
-        .app-header { display: flex; justify-content: space-between; align-items: center; height: 50px; margin-bottom: 10px; }
-        .back-btn { background: white; color: black; border: 3px solid black; padding: 8px 18px; font-weight: bold; transform: skew(-15deg); cursor: pointer; box-shadow: 4px 4px 0 var(--primary); transition: 0.1s; }
-        .back-btn:hover { background: var(--primary); color: white; transform: skew(-15deg) translate(-2px, -2px); }
-        .settings-btn { width: 40px; height: 40px; background: white; border: 3px solid black; display: flex; align-items: center; justify-content: center; cursor: pointer; transform: rotate(5deg); box-shadow: 4px 4px 0 var(--primary); }
-        .settings-icon-bar, .settings-icon-bar::before, .settings-icon-bar::after { content: ""; width: 20px; height: 4px; background: black; position: absolute; }
+        .app-header { display: flex; justify-content: space-between; align-items: center; height: 50px; margin-bottom: 10px; position: relative;}
+        
+        .back-btn { position: absolute; left: 0; top: 0; background: white; color: black; border: 4px solid black; padding: 8px 18px; font-weight: 900; transform: skew(-15deg); cursor: pointer; box-shadow: 4px 4px 0 var(--primary); transition: 0.1s; text-transform: uppercase; letter-spacing: 1px; z-index: 10;}
+        .back-btn:hover { background: var(--primary); color: white; transform: skew(-15deg) translate(-3px, -3px); box-shadow: 6px 6px 0 black; }
+        
+        body.secret-mode .back-btn { background: #000; color: #eee; border-color: #FF0040; box-shadow: 4px 4px 0 #FF0040; }
+        body.secret-mode .back-btn:hover { background: #FF0040; color: white; box-shadow: 6px 6px 0 #000; }
+
+        .settings-btn { width: 45px; height: 45px; background: white; border: 4px solid black; display: flex; align-items: center; justify-content: center; cursor: pointer; transform: rotate(5deg); box-shadow: 4px 4px 0 var(--primary); transition: 0.1s; flex-shrink: 0;}
+        .settings-btn:hover { transform: rotate(5deg) translate(-3px, -3px); box-shadow: 6px 6px 0 black; }
+        
+        .settings-icon-bar, .settings-icon-bar::before, .settings-icon-bar::after { content: ""; width: 22px; height: 4px; background: black; position: absolute; }
         .settings-icon-bar::before { top: -8px; } .settings-icon-bar::after { top: 8px; }
 
-        .card { background: var(--card); color: var(--text); padding: 20px; box-shadow: 10px 10px 0px var(--primary); border: 4px solid black; position: relative; }
-        h1 { background: black; color: white; display: inline-block; padding: 5px 20px; transform: rotate(-2deg); font-size: 20px; margin-top: 0; margin-bottom: 15px; }
-        #q-text { font-size: 14px; font-weight: 900; line-height: 1.6; border-left: 8px solid var(--primary); padding-left: 15px; margin-bottom: 15px; }
+        body.secret-mode .settings-btn { background: #000; border-color: #FF0040; box-shadow: 4px 4px 0 #FF0040; }
+        body.secret-mode .settings-icon-bar, body.secret-mode .settings-icon-bar::before, body.secret-mode .settings-icon-bar::after { background: #eee; }
+        body.secret-mode .settings-btn:hover { box-shadow: 6px 6px 0 #000; }
 
-        .controls-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: #eee; border: 2px solid #ccc; font-weight: bold; color: var(--primary); font-size: 14px;}
+        .card { background: var(--card); color: var(--text); padding: 20px; border: 5px solid black; box-shadow: 12px 12px 0px var(--primary); position: relative; transition: box-shadow 0.3s, background 0.3s, border-color 0.3s; }
+        
+        h1 { background: black; color: white; display: inline-block; padding: 8px 25px; transform: rotate(-3deg) translateX(-10px); font-size: 22px; margin-top: -10px; margin-bottom: 20px; box-shadow: 5px 5px 0 var(--primary); letter-spacing: 2px; transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;}
+        body.secret-mode h1 { background: #FF0040; color: white; border: 3px solid black; box-shadow: 5px 5px 0 #000; }
 
-        #canvas-area { position: relative; width: 100%; min-height: 400px; background: #fdfdfd; border: 4px dashed #333; margin-bottom: 20px; overflow: hidden; touch-action: pan-y; }
+        #q-text { font-size: 15px; font-weight: 900; line-height: 1.6; border-left: 8px solid var(--primary); padding-left: 15px; margin-bottom: 15px; transition: border-color 0.3s; }
+
+        .controls-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: #eee; border: 3px solid #ccc; font-weight: bold; color: var(--primary); font-size: 14px; transition: background 0.3s, border-color 0.3s;}
+        body.secret-mode .controls-area { background: #100010; border-color: #555; color: #eee; }
+
+        #canvas-area { position: relative; width: 100%; min-height: 400px; background: #fdfdfd; border: 4px dashed #333; margin-bottom: 20px; overflow: hidden; touch-action: pan-y; transition: background 0.3s, border-color 0.3s;}
         #links-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        body.secret-mode #canvas-area { background: #000; border-color: #FF0040; }
 
         .aws-slot {
             position: absolute; width: 95px; height: 45px; border: 3px dashed #888; background: var(--slot-bg);
             border-radius: 4px; transform: translate(-50%, -50%); z-index: 2; display: flex; align-items: center; justify-content: center;
-            color: #888; font-weight: bold; font-size: 12px; pointer-events: none;
+            color: #888; font-weight: bold; font-size: 12px; pointer-events: none; transition: background 0.3s, border-color 0.3s;
         }
+        body.secret-mode .aws-slot { border-color: #555; color: #555; }
 
         .aws-node {
             position: absolute; width: 95px; height: 45px; background: white; border: 3px solid black; color: black;
             font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; text-align: center;
             box-shadow: 4px 4px 0 rgba(0,0,0,0.2); cursor: grab; transform: translate(-50%, -50%); touch-action: none; z-index: 10;
+            line-height: 1.2; padding: 2px; box-sizing: border-box; transition: transform 0.1s, box-shadow 0.1s;
         }
         .aws-node:active { cursor: grabbing; box-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
+        body.secret-mode .aws-node { background: #000; color: #eee; border-color: #FF0040; box-shadow: 4px 4px 0 #FF0040; }
 
         .palette { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-        .palette-item { border: 3px solid black; font-weight: 900; cursor: grab; padding: 10px 15px; background: white; color: black; transform: skew(-5deg); box-shadow: 3px 3px 0 #ccc; touch-action: none; font-size: 12px; }
-        .palette-item:active { cursor: grabbing; box-shadow: none; transform: skew(-5deg) translate(2px,2px); }
+        .palette-item { border: 3px solid black; font-weight: 900; cursor: grab; padding: 8px 12px; background: white; color: black; transform: skew(-5deg); box-shadow: 4px 4px 0 #ccc; touch-action: none; font-size: 11px; line-height: 1.2; text-align: center; transition: background 0.3s, border-color 0.3s;}
+        .palette-item:active { cursor: grabbing; box-shadow: none; transform: skew(-5deg) translate(3px,3px); }
+        body.secret-mode .palette-item { background: #000; color: #eee; border-color: #FF0040; box-shadow: 4px 4px 0 #000; }
 
-        .drag-ghost { position: fixed; width: 95px; height: 45px; background: rgba(255,255,255,0.9); border: 3px solid black; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; text-align: center; box-shadow: 8px 8px 0 rgba(211,18,18,0.5); transform: translate(-50%, -50%) scale(1.1); pointer-events: none; z-index: 9999; }
+        .drag-ghost { position: fixed; width: 95px; height: 45px; background: rgba(255,255,255,0.9); border: 3px solid black; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; text-align: center; box-shadow: 8px 8px 0 rgba(211,18,18,0.5); transform: translate(-50%, -50%) scale(1.1); pointer-events: none; z-index: 9999; line-height: 1.2; padding: 2px; box-sizing: border-box;}
+        body.secret-mode .drag-ghost { background: rgba(26, 0, 26, 0.9); border-color: #FF0040; color: #eee; box-shadow: 8px 8px 0 rgba(255, 0, 64, 0.5); }
 
-        .menu-btn { border: 3px solid black; font-weight: 900; cursor: pointer; transition: 0.1s; padding: 15px; background: white; color: black; transform: skew(-5deg); width: 100%; margin-bottom: 15px; font-size: 14px; text-align: left; }
-        .menu-btn:hover { background: var(--primary); color: white; transform: translate(-3px, -3px) skew(-5deg); box-shadow: 6px 6px 0 black; }
-        .menu-btn.primary { background: var(--primary); color: white; box-shadow: 4px 4px 0 black; font-size: 18px; text-align: center; }
-        .menu-btn.small { padding: 6px 12px; font-size: 12px; box-shadow: 2px 2px 0 black; width: auto; margin: 0;}
+        .menu-btn { border: 4px solid black; font-weight: 900; cursor: pointer; transition: 0.1s; padding: 15px; background: white; color: black; transform: skew(-8deg); width: 100%; margin-bottom: 15px; font-size: 15px; text-align: left; letter-spacing: 1px;}
+        .menu-btn:hover { background: var(--primary); color: white; transform: translate(-4px, -4px) skew(-8deg); box-shadow: 8px 8px 0 black; }
+        .menu-btn.primary { background: var(--primary); color: white; box-shadow: 6px 6px 0 black; font-size: 18px; text-align: center; }
+        .menu-btn.small { padding: 8px 15px; font-size: 13px; box-shadow: 3px 3px 0 black; width: auto; margin: 0;}
+        body.secret-mode .menu-btn { background: #000; color: #eee; border-color: #FF0040; box-shadow: 4px 4px 0 #FF0040; }
+        body.secret-mode .menu-btn:hover { background: #FF0040; color: white; box-shadow: 8px 8px 0 #000; }
+        body.secret-mode .menu-btn.primary { background: #FF0040; color: white; box-shadow: 6px 6px 0 #000; }
 
-        .result { margin-top: 25px; padding: 20px; border: 4px solid black; font-weight: 900; }
+        .result { margin-top: 25px; padding: 20px; border: 5px solid black; font-weight: 900; }
         .correct { border-color: var(--success); color: var(--success); }
         .wrong { background: black; color: white; border-color: var(--primary); }
         .hidden { display: none !important; }
+        body.secret-mode .result.correct { border-color: #00ff40; color: #00ff40; }
+        body.secret-mode .result.wrong { background: #000; color: #eee; border-color: #FF0040; }
 
         .explanation-text { font-size: 14px; line-height: 1.6; margin-top: 15px; font-weight: bold; color: inherit; white-space: pre-wrap; text-align: left;}
         
-        #correct-canvas { position: relative; width: 100%; min-height: 250px; background: #fdfdfd; border: 2px dashed #ccc; overflow: hidden; touch-action: pan-y; }
-        .aws-node-mini { position: absolute; width: 85px; height: 40px; background: white; border: 3px solid var(--success); color: black; font-weight: bold; font-size: 10px; text-align: center; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); pointer-events: none; box-shadow: 2px 2px 0 #ccc; }
+        #correct-canvas { position: relative; width: 100%; min-height: 250px; background: #fdfdfd; border: 3px dashed #ccc; overflow: hidden; touch-action: pan-y; margin-top: 10px; transition: background 0.3s, border-color 0.3s;}
+        body.secret-mode #correct-canvas { background: #000; border-color: #FF0040; }
+        
+        .aws-node-mini { position: absolute; width: 90px; height: 42px; background: white; border: 3px solid var(--success); color: black; font-weight: bold; font-size: 10px; text-align: center; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); pointer-events: none; box-shadow: 2px 2px 0 #ccc; line-height: 1.2; padding: 2px; box-sizing: border-box; transition: background 0.3s, border-color 0.3s;}
+        body.secret-mode .aws-node-mini { background: #000; color: #eee; border-color: #00ff40; box-shadow: 2px 2px 0 #000; }
 
-        .timer-container { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: #000; border-top: 4px solid var(--primary); display: flex; align-items: center; justify-content: center; z-index: 100; box-shadow: 0 -5px 15px rgba(211,18,18,0.2); }
-        .timer-bar { position: absolute; top: 0; left: 0; height: 100%; background: var(--primary); width: 100%; opacity: 0.5; }
+        .timer-container { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: #000; border-top: 4px solid var(--primary); display: flex; align-items: center; justify-content: center; z-index: 100; box-shadow: 0 -5px 15px rgba(211,18,18,0.2); transition: border-color 0.3s, box-shadow 0.3s; }
+        .timer-bar { position: absolute; top: 0; left: 0; height: 100%; background: var(--primary); width: 100%; opacity: 0.5; transition: background 0.3s; }
+        body.secret-mode .timer-container { border-color: #FF0040; box-shadow: 0 -5px 15px rgba(255, 0, 64, 0.5); }
+        body.secret-mode .timer-bar { background: #FF0040; }
 
-        #settings-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 500; }
-        .modal-content { background: black; padding: 30px; border: 5px solid white; width: 85%; max-width: 320px; text-align: center; color: white; transform: rotate(-2deg); box-shadow: 10px 10px 0 black; }
+        #settings-modal, #glossary-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 500; transition: background 0.3s;}
+        body.secret-mode #settings-modal, body.secret-mode #glossary-modal { background: rgba(0,0,0,0.9); }
+        
+        .modal-content { background: black; padding: 30px; border: 5px solid white; width: 85%; max-width: 320px; text-align: center; color: white; transform: rotate(-2deg); box-shadow: 10px 10px 0 black; transition: border-color 0.3s, background 0.3s;}
+        body.secret-mode .modal-content { border-color: #FF0040; background: #1a001a; box-shadow: 10px 10px 0 #000; }
+
+        #glossary-modal .modal-content { max-height: 80vh; overflow-y: auto; text-align: left; padding: 20px; }
+        #glossary-modal .modal-content::-webkit-scrollbar { width: 8px; }
+        #glossary-modal .modal-content::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+
         .volume-control { margin: 25px 0; text-align: left; } .volume-label { font-size: 14px; font-weight: 900; margin-bottom: 10px; display: block; letter-spacing: 2px; }
-        .slider { appearance: none; -webkit-appearance: none; width: 100%; height: 8px; background: #444; outline: none; border: 2px solid white; }
-        .slider::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 20px; height: 20px; background: white; cursor: pointer; border: 3px solid var(--primary); border-radius: 50%; }
+        .slider { appearance: none; -webkit-appearance: none; width: 100%; height: 8px; background: #444; outline: none; border: 2px solid white; transition: border-color 0.3s;}
+        .slider::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 20px; height: 20px; background: white; cursor: pointer; border: 3px solid var(--primary); border-radius: 50%; transition: border-color 0.3s; }
+        body.secret-mode .slider { border-color: #FF0040; background: #000; }
+        body.secret-mode .slider::-webkit-slider-thumb { background: #FF0040; border-color: white; }
 
-        .correct-anime { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 250px; height: 250px; border: 25px solid var(--success); border-radius: 50%; pointer-events: none; z-index: 1000; opacity: 0; }
+        .correct-anime { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 250px; height: 250px; border: 25px solid var(--success); border-radius: 50%; pointer-events: none; z-index: 1000; opacity: 0; transition: border-color 0.3s;}
         .run-anime { animation: p5-circle 0.4s ease-out forwards; } @keyframes p5-circle { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 50% { opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1.3); opacity: 0; } }
         .shake { animation: shake 0.2s ease-in-out 0s 2; border: 6px solid var(--primary); transform: translateZ(0); } @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        body.secret-mode .correct-anime { border-color: #00ff40; }
+
         #loading-screen { text-align: center; padding: 50px 0; font-weight: bold; font-size: 18px; color: var(--primary); }
+
+        #theme-wipe {
+            position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+            z-index: 9999; pointer-events: none; background-color: transparent; 
+            box-shadow: 0 0 100px transparent; transform: rotate(-45deg) translateY(150%);
+        }
+
+        /* ★ マトリックス演出用キャンバス ★ */
+        #matrix-canvas {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 9998; background-color: black; pointer-events: none;
+            transition: opacity 1.5s ease-in-out; opacity: 0;
+        }
+
+        /* Change Mode ボタンの明滅アニメーション */
+        @keyframes secret-btn-glow {
+            0%, 100% { box-shadow: 4px 4px 0 #FF0040, 0 0 10px #FF0040; }
+            50% { box-shadow: 4px 4px 0 #800020, 0 0 20px #800020; }
+        }
     </style>
 </head>
 <body>
 
+<div id="theme-wipe"></div>
+<canvas id="matrix-canvas" class="hidden"></canvas>
 <div id="circle-anime" class="correct-anime"></div>
 
 <div id="settings-modal" onclick="closeSettings()">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <h2 style="font-size: 30px; margin-bottom: 30px; font-weight: 900;">CONFIG</h2>
+        <h2 style="font-size: 30px; margin-bottom: 20px; font-weight: 900;">MENU</h2>
+        
+        <button id="change-mode-btn" class="menu-btn hidden" style="background: black; color: #FF0040; border-color: #FF0040; text-align: center; margin-bottom: 20px; animation: secret-btn-glow 2s infinite, shake 0.3s infinite;" onclick="clickWrapper(activateSecretMode)">🔥 CHANGE MODE</button>
+
         <div class="volume-control"><span class="volume-label">BGM VOLUME</span><input type="range" min="0" max="1" step="0.01" value="0.08" class="slider" oninput="updateBgmVolume(this.value)"></div>
         <div class="volume-control"><span class="volume-label">SE VOLUME</span><input type="range" min="0" max="1" step="0.01" value="0.5" class="slider" oninput="updateSeVolume(this.value)"></div>
-        <button class="menu-btn primary" style="margin-top:20px" onclick="clickWrapper(() => closeSettings())">RESUME</button>
+        
+        <button class="menu-btn" style="background: var(--gold); color: black; margin-top: 15px; margin-bottom: 25px; text-align: center;" onclick="clickWrapper(openGlossary)">Service Detail</button>
+
+        <button class="menu-btn primary" onclick="clickWrapper(() => closeSettings())">RESUME</button>
+    </div>
+</div>
+
+<div id="glossary-modal" onclick="closeGlossary()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h2 style="font-size: 20px; margin-bottom: 20px; font-weight: 900; text-align: center; color: var(--gold);">SERVICE GLOSSARY</h2>
+        <div id="glossary-list"></div>
+        <button class="menu-btn primary" style="margin-top:20px" onclick="clickWrapper(closeGlossary)">閉じる</button>
     </div>
 </div>
 
 <div class="container">
     <header class="app-header">
+        <div style="display:flex; gap:10px; margin-right: auto; align-items: center; z-index: 10;">
+            <button id="theme-btn" class="settings-btn" style="font-size: 20px;" onclick="clickWrapper(cycleTheme)">★</button>
+            <button id="reset-mode-btn" class="menu-btn small hidden" style="background: black; color: white; border-color: white; margin: 0; padding: 6px 10px;" onclick="clickWrapper(deactivateSecretMode)">RESET MODE</button>
+        </div>
+        
         <button id="back-btn" class="back-btn hidden" onclick="clickWrapper(backToMenu)">◀ BACK</button>
-        <button class="settings-btn" style="margin-left: auto;" onclick="clickWrapper(() => openSettings())"><div class="settings-icon-bar"></div></button>
+        
+        <button class="settings-btn" style="margin-left: auto; z-index: 10;" onclick="clickWrapper(() => openSettings())"><div class="settings-icon-bar"></div></button>
     </header>
 
     <div id="main-menu-screen" class="card">
-        <h1>AWS SAA パズル演習 (全100問)</h1>
+        <h1>AWS SAA パズル演習</h1>
         <div style="font-weight: bold; margin-bottom: 20px;">制限時間：各問 90秒</div>
         <div id="loading-screen">CSVデータを読み込み中...</div>
         <div id="puzzle-list"></div>
@@ -115,8 +265,11 @@
         <div id="q-text">問題文</div>
         
         <div class="controls-area">
-            <span>▶ サービスをスロットへドラッグ</span>
-            <button class="menu-btn small" onclick="clickWrapper(clearCanvasNodes)">クリア</button>
+            <span>▶ スロットへドラッグ（ユーザー起点）</span>
+            <div style="display: flex; gap: 8px;">
+                <button id="hint-btn" class="menu-btn small" style="background: var(--gold); color: black;" onclick="clickWrapper(useHint)">💡 ヒント</button>
+                <button class="menu-btn small" onclick="clickWrapper(clearCanvasNodes)">クリア</button>
+            </div>
         </div>
 
         <div id="canvas-area">
@@ -157,24 +310,73 @@
 </div>
 
 <script>
+    const themes = ['', 'theme-p3', 'theme-p4']; 
+    const themeColors = ['#E50000', '#00A8FF', '#F3C623']; 
+    let currentThemeIdx = 0;
+
+    function cycleTheme() {
+        if(isSecretMode) return; 
+        
+        currentThemeIdx = (currentThemeIdx + 1) % themes.length;
+        const nextTheme = themes[currentThemeIdx];
+        const nextColor = themeColors[currentThemeIdx];
+        
+        const wipe = document.getElementById('theme-wipe');
+        wipe.style.setProperty('--wipe-color', nextColor);
+        wipe.style.backgroundColor = 'var(--wipe-color)'; 
+        wipe.style.boxShadow = '0 0 100px var(--wipe-color)';
+        wipe.style.transition = 'transform 0.5s cubic-bezier(0.64, 0.04, 0.35, 1)';
+        wipe.style.transform = 'rotate(-45deg) translateY(0%)'; 
+        
+        setTimeout(() => {
+            document.body.className = nextTheme;
+            wipe.style.transform = 'rotate(-45deg) translateY(-150%)'; 
+            setTimeout(() => {
+                wipe.style.transition = 'none';
+                wipe.style.transform = 'rotate(-45deg) translateY(150%)';
+                wipe.style.backgroundColor = 'transparent'; 
+                wipe.style.boxShadow = '0 0 100px transparent';
+            }, 500);
+        }, 500);
+    }
+
     const awsColors = {
         "EC2": "#E86F21", "Lambda": "#E86F21", "ALB": "#E86F21", "ECS": "#E86F21", "Fargate": "#E86F21", "Auto Scaling": "#E86F21", "EKS": "#E86F21", "Elastic Beanstalk": "#E86F21",
-        "S3": "#448123", "EFS": "#448123", "EBS": "#448123", "Storage Gateway": "#448123", "Backup": "#448123", "Snowball": "#448123", "DataSync": "#448123",
+        "S3": "#448123", "EFS": "#448123", "EBS": "#448123", "Storage Gateway": "#448123", "Backup": "#448123", "Snowball": "#448123", "DataSync": "#448123", "Snowball Edge": "#448123",
         "RDS": "#3355DA", "DynamoDB": "#3355DA", "Aurora": "#3355DA", "ElastiCache": "#3355DA", "Redshift": "#3355DA", "DAX": "#3355DA", "RDS Proxy": "#3355DA", "Neptune": "#3355DA",
-        "VPC": "#693CC5", "CloudFront": "#693CC5", "Route 53": "#693CC5", "API Gateway": "#693CC5", "Global Accelerator": "#693CC5", "Direct Connect": "#693CC5", "Transit Gateway": "#693CC5", "VPC Endpoint": "#693CC5", "NAT Gateway": "#693CC5", "VPN": "#693CC5", "Internet Gateway": "#693CC5", "AppSync": "#693CC5",
+        "VPC": "#693CC5", "CloudFront": "#693CC5", "Route 53": "#693CC5", "API Gateway": "#693CC5", "Global Accelerator": "#693CC5", "Direct Connect": "#693CC5", "Transit Gateway": "#693CC5", "VPC Endpoint": "#693CC5", "NAT Gateway": "#693CC5", "VPN": "#693CC5", "Internet Gateway": "#693CC5", "AppSync": "#693CC5", "PrivateLink": "#693CC5",
         "IAM": "#CC2264", "KMS": "#CC2264", "WAF": "#CC2264", "Cognito": "#CC2264", "Secrets Manager": "#CC2264", "Shield": "#CC2264", "Macie": "#CC2264", "GuardDuty": "#CC2264", "Certificate Manager": "#CC2264",
         "CloudWatch": "#E7157B", "CloudTrail": "#E7157B", "Systems Manager": "#E7157B", "Config": "#E7157B",
         "SQS": "#E7157B", "SNS": "#E7157B", "EventBridge": "#E7157B", "Step Functions": "#E7157B", "MQ": "#E7157B",
-        "Kinesis": "#6B49AE", "Firehose": "#6B49AE", "Athena": "#6B49AE", "Glue": "#6B49AE", "EMR": "#6B49AE", "OpenSearch": "#6B49AE", "IoT Core": "#6B49AE"
+        "Kinesis": "#6B49AE", "Firehose": "#6B49AE", "Athena": "#6B49AE", "Glue": "#6B49AE", "EMR": "#6B49AE", "OpenSearch": "#6B49AE", "IoT Core": "#6B49AE",
+        "ユーザー": "#222222", "管理者": "#222222", "開発者": "#222222", "クライアント": "#222222", "オンプレミス": "#222222", "デバイス": "#222222", "アプリ": "#222222"
     };
-    function getAwsColor(s) { 
-        let base = s.replace(/\s*\d+$/, '').replace(/\s*\(.*$/, '').trim();
-        return awsColors[base] || "#555555"; 
+
+    function getBaseName(s) {
+        return s.replace(/[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, '')
+                .replace(/\s*\(.*$/, '')
+                .replace(/\s+\d+$/, '') 
+                .trim();
+    }
+    function getAwsColor(s) { return awsColors[getBaseName(s)] || "#555555"; }
+
+    function getDisplayName(s) {
+        const base = getBaseName(s);
+        if (base === "ユーザー" || base === "クライアント" || base === "管理者" || base === "開発者") return `👤 ${s}`;
+        if (base === "オンプレミス") return `🏢 ${s}`;
+        if (base === "デバイス" || base === "アプリ") return `📱 ${s}`;
+        return s;
     }
 
-    let puzzles = []; let currentPuzzle = null;
+    let puzzles = []; 
+    let currentPuzzle = null;
     let slotData = []; let dragData = null;
     const TIME_LIMIT = 90; let timerInterval; let timeLeft = TIME_LIMIT;
+    let glossaryData = {}; 
+
+    // ★ 隠し機能用変数 ★
+    let isSecretMode = false;
+    let emptySubmitCount = 0;
 
     window.addEventListener('DOMContentLoaded', () => {
         initAudio(); document.addEventListener('pointermove', onPointerMove); document.addEventListener('pointerup', onPointerUp); loadCSV();
@@ -185,26 +387,49 @@
             download: true, header: true, skipEmptyLines: true,
             complete: function(res) {
                 document.getElementById('loading-screen').classList.add('hidden');
-                puzzles = res.data.map((row, i) => ({
-                    id: `q${i + 1}`, title: row.title, question: row.question,
-                    palette: row.palette.split('|').map(s => s.trim()),
-                    correctNodes: row.correctNodes.split('|').map(s => s.trim()),
-                    correctLinks: row.correctLinks ? row.correctLinks.split('|').map(l => {
-                        const p = l.split('>'); return { from: p[0].trim(), to: p[1].trim() };
-                    }) : [],
-                    explanation: row.explanation.replace(/\\n/g, '\n')
-                }));
+                puzzles = res.data.map((row, i) => {
+                    const links = row.correctLinks ? row.correctLinks.split('|').map(l => {
+                        let parts = l.split(':');
+                        let route = parts[0].split('>');
+                        return { from: route[0].trim(), to: route[1].trim(), label: parts[1] ? parts[1].trim() : '' };
+                    }) : [];
+
+                    return {
+                        id: `q${i + 1}`, title: row.title, question: row.question,
+                        palette: row.palette.split('|').map(s => s.trim()),
+                        correctNodes: row.correctNodes.split('|').map(s => s.trim()),
+                        correctLinks: links,
+                        explanation: row.explanation.replace(/\\n/g, '\n')
+                    };
+                });
                 initMenu();
             },
             error: function() { document.getElementById('loading-screen').innerText = "CSVの読み込みに失敗しました。"; }
         });
+
+        Papa.parse('questions/explanation.csv', {
+            download: true, header: true, skipEmptyLines: true,
+            complete: function(res) {
+                res.data.forEach(row => {
+                    if(row.service && row.description) {
+                        glossaryData[row.service.trim()] = row.description.replace(/\\n/g, '\n');
+                    }
+                });
+            }
+        });
     }
 
-    let audioCtx = null; const soundBuffers = {}; let bgmVolume = 0.08; let seVolume = 0.5; let bgmSource = null; let bgmGainNode = null; let audioInitialized = false;
+    let audioCtx = null; const soundBuffers = {}; let bgmVolume = 0.08; let seVolume = 0.5; let audioInitialized = false;
+    let bgmSource = null; let bgmGainNode = null; let currentBGMName = null; let loopTimeout = null;
+
     function initAudio() {
         if (audioInitialized) return; audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        ['bgm', 'correct', 'wrong', 'select'].forEach(name => {
-            let url = name === 'bgm' ? './assets/sounds/BGM/persona5_style_music.mp3' : name === 'wrong' ? './assets/sounds/SE/noncorrect.mp3' : `./assets/sounds/SE/${name}.mp3`;
+        ['bgm', 'correct', 'wrong', 'select', 'secret_bgm'].forEach(name => {
+            let url;
+            if (name === 'bgm') url = './assets/sounds/BGM/persona5_style_music.mp3';
+            else if (name === 'secret_bgm') url = './assets/sounds/BGM/Inzemunia_boss.mp3'; 
+            else if (name === 'wrong') url = './assets/sounds/SE/noncorrect.mp3';
+            else url = `./assets/sounds/SE/${name}.mp3`;
             loadSound(name, url);
         });
         audioInitialized = true;
@@ -214,12 +439,201 @@
     document.addEventListener('pointerdown', unlockAudio, { once: true });
     function playSE(name) { if (!audioCtx || !soundBuffers[name]) return; if (audioCtx.state === 'suspended') audioCtx.resume(); const src = audioCtx.createBufferSource(); src.buffer = soundBuffers[name]; const gain = audioCtx.createGain(); gain.gain.value = seVolume; src.connect(gain).connect(audioCtx.destination); src.start(0); }
     function clickWrapper(cb) { unlockAudio(); playSE('select'); if (cb) setTimeout(cb, 10); }
-    function startBGM() { if (bgmVolume === 0 || !soundBuffers['bgm'] || bgmSource) return; if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); bgmSource = audioCtx.createBufferSource(); bgmSource.buffer = soundBuffers['bgm']; bgmSource.loop = true; bgmGainNode = audioCtx.createGain(); bgmGainNode.gain.value = bgmVolume; bgmSource.connect(bgmGainNode).connect(audioCtx.destination); bgmSource.start(0); }
-    function stopBGM() { if (bgmSource) { try { bgmSource.stop(); } catch(e){} bgmSource = null; bgmGainNode = null; } }
-    function updateBgmVolume(val) { bgmVolume = parseFloat(val); if (bgmGainNode) bgmGainNode.gain.value = bgmVolume; if (bgmVolume > 0 && !bgmSource && !document.getElementById('quiz-screen').classList.contains('hidden')) startBGM(); else if (bgmVolume === 0) stopBGM(); }
+    
+    // ★ クロスフェード対応のBGM再生ロジック ★
+    function startBGM(fadeIn = false) { 
+        if (bgmVolume === 0) return; 
+        const bgmName = isSecretMode ? 'secret_bgm' : 'bgm'; 
+        
+        // 同じ曲が流れているなら何もしない
+        if (bgmSource && currentBGMName === bgmName) return;
+
+        if (!soundBuffers[bgmName]) return;
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); 
+
+        playNextLoop(bgmName, fadeIn);
+    }
+
+    function playNextLoop(bgmName, fadeIn) {
+        const source = audioCtx.createBufferSource(); 
+        source.buffer = soundBuffers[bgmName]; 
+        
+        const gainNode = audioCtx.createGain(); 
+        
+        if (fadeIn) {
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(bgmVolume, audioCtx.currentTime + 3); 
+        } else {
+            gainNode.gain.value = bgmVolume; 
+        }
+
+        source.connect(gainNode).connect(audioCtx.destination); 
+        source.start(0); 
+
+        // 古いBGMがあればフェードアウトして止める
+        if (bgmSource && bgmGainNode) {
+            const oldSource = bgmSource;
+            const oldGain = bgmGainNode;
+            oldGain.gain.setValueAtTime(oldGain.gain.value, audioCtx.currentTime);
+            oldGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 3);
+            setTimeout(() => { try { oldSource.stop(); } catch(e){} }, 3000);
+        }
+
+        bgmSource = source;
+        bgmGainNode = gainNode;
+        currentBGMName = bgmName;
+
+        const bufferDuration = source.buffer.duration;
+        clearTimeout(loopTimeout);
+        if (bufferDuration > 3) {
+            loopTimeout = setTimeout(() => {
+                playNextLoop(bgmName, true);
+            }, (bufferDuration - 3) * 1000);
+        }
+    }
+
+    function stopBGM() { 
+        clearTimeout(loopTimeout);
+        if (bgmSource && bgmGainNode) { 
+            const oldSource = bgmSource;
+            const oldGain = bgmGainNode;
+            oldGain.gain.setValueAtTime(oldGain.gain.value, audioCtx.currentTime);
+            oldGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+            setTimeout(() => { try { oldSource.stop(); } catch(e){} }, 1000);
+        } 
+        bgmSource = null; 
+        bgmGainNode = null; 
+        currentBGMName = null;
+    }
+
+    function updateBgmVolume(val) { 
+        bgmVolume = parseFloat(val); 
+        if (bgmGainNode) {
+            bgmGainNode.gain.setValueAtTime(bgmVolume, audioCtx.currentTime);
+        }
+        if (bgmVolume > 0 && !bgmSource) {
+            if (isSecretMode || !document.getElementById('quiz-screen').classList.contains('hidden')) {
+                startBGM(); 
+            }
+        } else if (bgmVolume === 0) {
+            stopBGM(); 
+        }
+    }
+
     function updateSeVolume(val) { seVolume = parseFloat(val); }
-    function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
+
+    // ★ マトリックスアニメーション関数 ★
+    let matrixInterval;
+    function startMatrix() {
+        const canvas = document.getElementById('matrix-canvas');
+        canvas.classList.remove('hidden');
+        void canvas.offsetWidth; // リフロー強制
+        canvas.style.opacity = '1';
+        
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレゲゼデベペオォコソトノホモヨョロゴゾドボポヴッン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const alphabet = katakana.split('');
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        for(let x = 0; x < columns; x++) drops[x] = 1;
+
+        matrixInterval = setInterval(() => {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0F0';
+            ctx.font = fontSize + 'px monospace';
+            for(let i = 0; i < drops.length; i++) {
+                const text = alphabet[Math.floor(Math.random() * alphabet.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }, 33);
+    }
+    function stopMatrix() { clearInterval(matrixInterval); }
+
+    function openSettings() { 
+        const changeModeBtn = document.getElementById('change-mode-btn');
+        // ★ ちょうど2回空送信（3回目なら非表示）
+        if (currentPuzzle && currentPuzzle.title.includes('Shield AdvancedのSRT連携') && emptySubmitCount === 2 && !isSecretMode) {
+            changeModeBtn.classList.remove('hidden');
+        } else {
+            changeModeBtn.classList.add('hidden');
+        }
+        document.getElementById('settings-modal').style.display = 'flex'; 
+    }
     function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
+
+    // ★ 隠し機能のアクティベート処理（マトリックス演出） ★
+    function activateSecretMode() {
+        closeSettings();
+        stopBGM();
+        
+        startMatrix();
+        
+        // 3秒後にテーマを切り替え、フェードイン
+        setTimeout(() => {
+            isSecretMode = true;
+            emptySubmitCount = 0; 
+            
+            document.body.className = 'secret-mode'; 
+            document.getElementById('theme-btn').classList.add('hidden');
+            
+            const matrixCanvas = document.getElementById('matrix-canvas');
+            matrixCanvas.style.opacity = '0';
+            
+            startBGM(true); // BGMフェードイン
+            
+            setTimeout(() => {
+                matrixCanvas.classList.add('hidden');
+                stopMatrix();
+            }, 1500);
+
+        }, 3000);
+    }
+
+    function deactivateSecretMode() {
+        isSecretMode = false;
+        document.body.className = themes[currentThemeIdx]; 
+        
+        document.getElementById('reset-mode-btn').classList.add('hidden');
+        
+        // メニュー画面なら theme-btn を表示する
+        if (document.getElementById('quiz-screen').classList.contains('hidden')) {
+            document.getElementById('theme-btn').classList.remove('hidden'); 
+        }
+        
+        stopBGM();
+        if (!document.getElementById('quiz-screen').classList.contains('hidden')) {
+            startBGM(true);
+        }
+    }
+    
+    function openGlossary() {
+        closeSettings();
+        const list = document.getElementById('glossary-list');
+        list.innerHTML = '';
+        
+        if (!currentPuzzle) {
+            list.innerHTML = '<div style="text-align:center;">問題を開始してください。</div>';
+        } else {
+            let uniqueServices = [...new Set(currentPuzzle.palette.map(s => getBaseName(s)))].sort();
+            
+            uniqueServices.forEach(s => {
+                const desc = glossaryData[s] || "説明が登録されていません。";
+                const item = document.createElement('div');
+                item.style.marginBottom = '20px';
+                item.innerHTML = `<div style="font-weight: 900; color: var(--primary); border-bottom: 2px solid #555; padding-bottom: 3px; margin-bottom: 5px; font-size: 16px;">${s}</div>
+                                  <div style="font-size: 13px; line-height: 1.5; color: #ddd;">${desc}</div>`;
+                list.appendChild(item);
+            });
+        }
+        document.getElementById('glossary-modal').style.display = 'flex';
+    }
+    function closeGlossary() { document.getElementById('glossary-modal').style.display = 'none'; }
 
     function initMenu() {
         const list = document.getElementById('puzzle-list'); list.innerHTML = '';
@@ -230,8 +644,18 @@
     }
 
     function startPuzzle(index) {
+        if (currentPuzzle !== puzzles[index]) {
+            emptySubmitCount = 0; 
+        }
         currentPuzzle = puzzles[index];
-        document.getElementById('main-menu-screen').classList.add('hidden'); document.getElementById('quiz-screen').classList.remove('hidden'); document.getElementById('back-btn').classList.remove('hidden');
+
+        document.getElementById('main-menu-screen').classList.add('hidden'); 
+        document.getElementById('quiz-screen').classList.remove('hidden'); 
+        document.getElementById('back-btn').classList.remove('hidden');
+        
+        document.getElementById('theme-btn').classList.add('hidden'); 
+        document.getElementById('reset-mode-btn').classList.add('hidden'); 
+        
         document.getElementById('puzzle-title').innerText = currentPuzzle.title;
         document.getElementById('q-text').innerText = currentPuzzle.question;
         
@@ -241,11 +665,30 @@
         document.getElementById('canvas-area').style.pointerEvents = 'auto';
 
         setupCanvas(); renderPalette(); startBGM(); startTimer();
+        updateHintButtonState(); 
     }
 
     function retryPuzzle() { stopTimer(); startPuzzle(puzzles.indexOf(currentPuzzle)); }
     function nextPuzzle() { let idx = puzzles.indexOf(currentPuzzle); if (idx + 1 < puzzles.length) { stopTimer(); startPuzzle(idx + 1); } }
-    function backToMenu() { stopTimer(); stopBGM(); document.getElementById('quiz-screen').classList.add('hidden'); document.getElementById('main-menu-screen').classList.remove('hidden'); document.getElementById('back-btn').classList.add('hidden'); }
+    
+    function backToMenu() { 
+        emptySubmitCount = 0; 
+        
+        document.getElementById('quiz-screen').classList.add('hidden'); 
+        document.getElementById('main-menu-screen').classList.remove('hidden'); 
+        document.getElementById('back-btn').classList.add('hidden');
+        
+        if (isSecretMode) {
+            document.getElementById('reset-mode-btn').classList.remove('hidden');
+            document.getElementById('theme-btn').classList.add('hidden'); 
+            // ★ Secret Mode中はBGMを止めない！
+        } else {
+            document.getElementById('theme-btn').classList.remove('hidden'); 
+            document.getElementById('reset-mode-btn').classList.add('hidden');
+            stopBGM(); // 通常時はメニューに戻ったらBGM停止
+        }
+        stopTimer(); 
+    }
 
     function startTimer() {
         stopTimer();
@@ -259,8 +702,36 @@
     }
     function stopTimer() { cancelAnimationFrame(timerInterval); document.getElementById('timer-ui').classList.add('hidden'); }
 
-    // ★ 縦ベースのレイアウト計算（上から下へ流れるように）
-    function calculateNodePositions(nodes, links, canvasW) {
+    function updateHintButtonState() {
+        const hintBtn = document.getElementById('hint-btn');
+        if (!hintBtn) return;
+        
+        let unsolvedCount = 0;
+        for (let slot of slotData) {
+            if (slot.placedType !== slot.expectedType) unsolvedCount++;
+        }
+        
+        if (unsolvedCount <= 2) {
+            hintBtn.disabled = true;
+            hintBtn.style.opacity = '0.5';
+            hintBtn.style.cursor = 'not-allowed';
+        } else {
+            hintBtn.disabled = false;
+            hintBtn.style.opacity = '1';
+            hintBtn.style.cursor = 'pointer';
+        }
+    }
+
+    function useHint() {
+        let unsolvedSlots = slotData.filter(s => s.placedType !== s.expectedType);
+        if(unsolvedSlots.length <= 2) return;
+        
+        let targetSlot = unsolvedSlots[0];
+        placeNodeInSlot(targetSlot.id, targetSlot.expectedType);
+        updateHintButtonState(); 
+    }
+
+    function calculateNodePositions(nodes, links, canvasW, isMini = false) {
         let inDegree = {}; let adj = {};
         nodes.forEach(n => { inDegree[n] = 0; adj[n] = []; });
         links.forEach(l => { if(adj[l.from]) adj[l.from].push(l.to); if(inDegree[l.to] !== undefined) inDegree[l.to]++; });
@@ -282,30 +753,25 @@
             if(!layerCounts[l]) layerCounts[l] = []; layerCounts[l].push(n);
         });
         
-        // ★ Y軸（縦）の高さ計算
-        const requiredHeightPerLayer = 100; // 1レイヤーあたりの高さ
-        const requiredCanvasH = Math.max(350, (maxLayer + 2) * requiredHeightPerLayer);
+        const requiredHeightPerLayer = isMini ? 85 : 100;
+        const requiredCanvasH = Math.max(isMini ? 250 : 350, (maxLayer + 2) * requiredHeightPerLayer);
         const spacingY = requiredCanvasH / (maxLayer + 2);
         
         let positions = {};
-        
         for(let l = 0; l <= maxLayer; l++) {
             if(!layerCounts[l]) continue;
             let nList = layerCounts[l];
-            let spacingX = canvasW / (nList.length + 1); // X軸は横並び
-            nList.forEach((type, idx) => { 
-                positions[type] = { 
-                    x: spacingX * (idx + 1), 
-                    y: spacingY * (l + 1) 
-                }; 
-            });
+            let spacingX = canvasW / (nList.length + 1);
+            nList.forEach((type, idx) => { positions[type] = { x: spacingX * (idx + 1), y: spacingY * (l + 1) }; });
         }
         return { positions, requiredCanvasH };
     }
 
-    function drawLinkLine(svg, s1, s2, color, isDashed) {
+    function drawLinkLine(svg, s1, s2, color, isDashed, labelText, isMini = false) {
         let dx = s2.x - s1.x; let dy = s2.y - s1.y; let angle = Math.atan2(dy, dx);
-        let w = 47.5, h = 22.5; 
+        
+        let w = isMini ? 45 : 47.5; 
+        let h = isMini ? 21 : 22.5; 
         let absCos = Math.abs(Math.cos(angle)); let absSin = Math.abs(Math.sin(angle));
         let dist1 = (absCos * h > absSin * w) ? (w / absCos) : (h / absSin);
         
@@ -320,6 +786,27 @@
         if (color === '#888') line.setAttribute('marker-end', 'url(#arrow)'); else line.setAttribute('marker-end', 'url(#arrow-mini)');
         if (isDashed) line.setAttribute('stroke-dasharray', '4');
         svg.appendChild(line);
+
+        if (labelText) {
+            let normalAngle = angle - Math.PI / 2;
+            if (dx < 0) normalAngle += Math.PI;
+
+            let offsetX = Math.cos(normalAngle) * 12;
+            let offsetY = Math.sin(normalAngle) * 12;
+
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', ((fromX + toX) / 2) + offsetX);
+            text.setAttribute('y', ((fromY + toY) / 2) + offsetY + 4); 
+            text.setAttribute('fill', color);
+            text.setAttribute('font-size', isMini ? '10' : '11');
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('font-weight', 'bold');
+            text.setAttribute('paint-order', 'stroke');
+            text.setAttribute('stroke', isSecretMode ? '#000' : '#fdfdfd'); 
+            text.setAttribute('stroke-width', '3');
+            text.textContent = labelText;
+            svg.appendChild(text);
+        }
     }
 
     function setupCanvas() {
@@ -327,8 +814,7 @@
         canvas.querySelectorAll('.aws-slot, .aws-node').forEach(e => e.remove());
         
         const canvasW = canvas.clientWidth || 300;
-        const layout = calculateNodePositions(currentPuzzle.correctNodes, currentPuzzle.correctLinks, canvasW);
-        
+        const layout = calculateNodePositions(currentPuzzle.correctNodes, currentPuzzle.correctLinks, canvasW, false);
         canvas.style.height = `${layout.requiredCanvasH}px`;
         
         slotData = currentPuzzle.correctNodes.map((type, i) => {
@@ -348,21 +834,26 @@
         currentPuzzle.correctLinks.forEach(link => {
             const s1 = slotData.find(s => s.expectedType === link.from);
             const s2 = slotData.find(s => s.expectedType === link.to);
-            if (s1 && s2) drawLinkLine(svg, s1, s2, '#888', true);
+            if (s1 && s2) drawLinkLine(svg, s1, s2, '#888', true, link.label, false);
         });
     }
 
     function renderPalette() {
         const palette = document.getElementById('service-palette'); palette.innerHTML = '';
         currentPuzzle.palette.forEach(service => {
-            const btn = document.createElement('div'); btn.className = 'palette-item'; btn.innerText = service;
+            const btn = document.createElement('div'); btn.className = 'palette-item'; 
+            btn.innerText = getDisplayName(service);
             btn.style.borderBottom = `5px solid ${getAwsColor(service)}`;
             btn.addEventListener('pointerdown', (e) => startDrag(e, 'palette', service, null));
             palette.appendChild(btn);
         });
     }
 
-    function clearCanvasNodes() { slotData.forEach(s => s.placedType = null); document.querySelectorAll('.aws-node').forEach(e => e.remove()); }
+    function clearCanvasNodes() { 
+        slotData.forEach(s => s.placedType = null); 
+        document.querySelectorAll('.aws-node').forEach(e => e.remove()); 
+        updateHintButtonState(); 
+    }
 
     function startDrag(e, source, type, sourceSlotId) {
         if(e.button !== 0 && e.type.includes('mouse')) return; 
@@ -375,12 +866,13 @@
         dragData.currentX = e.clientX; dragData.currentY = e.clientY;
         if (!dragData.isDragging && Math.hypot(dragData.currentX - dragData.startX, dragData.currentY - dragData.startY) > 5) {
             dragData.isDragging = true;
-            const ghost = document.createElement('div'); ghost.className = 'drag-ghost'; ghost.innerText = dragData.type;
+            const ghost = document.createElement('div'); ghost.className = 'drag-ghost'; ghost.innerText = getDisplayName(dragData.type);
             ghost.style.borderBottom = `5px solid ${getAwsColor(dragData.type)}`;
             document.body.appendChild(ghost); dragData.ghostEl = ghost;
             if (dragData.source === 'slot') {
                 const nodeEl = document.getElementById(`node-${dragData.sourceSlotId}`); if(nodeEl) nodeEl.remove();
                 const slot = slotData.find(s => s.id === dragData.sourceSlotId); if(slot) slot.placedType = null;
+                updateHintButtonState(); 
             }
         }
         if (dragData.isDragging && dragData.ghostEl) { dragData.ghostEl.style.left = `${dragData.currentX}px`; dragData.ghostEl.style.top = `${dragData.currentY}px`; }
@@ -405,10 +897,11 @@
         if (slot.placedType) { const oldNode = document.getElementById(`node-${slotId}`); if(oldNode) oldNode.remove(); }
         slot.placedType = serviceType;
         const canvas = document.getElementById('canvas-area'); const nodeEl = document.createElement('div');
-        nodeEl.className = 'aws-node'; nodeEl.id = `node-${slotId}`; nodeEl.innerText = serviceType;
+        nodeEl.className = 'aws-node'; nodeEl.id = `node-${slotId}`; nodeEl.innerText = getDisplayName(serviceType);
         nodeEl.style.left = `${slot.x}px`; nodeEl.style.top = `${slot.y}px`; nodeEl.style.borderBottom = `5px solid ${getAwsColor(serviceType)}`;
         nodeEl.addEventListener('pointerdown', (e) => startDrag(e, 'slot', serviceType, slotId));
         canvas.appendChild(nodeEl);
+        updateHintButtonState(); 
     }
 
     function submitPuzzle(isTimeUp = false) {
@@ -416,6 +909,15 @@
         
         let userNodes = slotData.map(s => s.placedType).filter(Boolean);
         let isCorrect = false;
+
+        // ★ イースターエッグのカウントロジック ★
+        if (currentPuzzle && currentPuzzle.title.includes('Shield AdvancedのSRT連携')) {
+            if (userNodes.length === 0) {
+                emptySubmitCount++;
+            } else {
+                emptySubmitCount = 0; 
+            }
+        }
 
         if (userNodes.length === currentPuzzle.correctNodes.length) {
             const isNodesCorrect = checkArraysMatch(currentPuzzle.correctNodes, userNodes);
@@ -477,21 +979,22 @@
         canvas.querySelectorAll('.aws-node-mini').forEach(n => n.remove());
         svg.innerHTML = `<defs><marker id="arrow-mini" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--success)" /></marker></defs>`;
 
-        const canvasW = canvas.clientWidth || 300;
-        const layout = calculateNodePositions(currentPuzzle.correctNodes, currentPuzzle.correctLinks, canvasW);
-        
-        canvas.style.height = `${Math.max(250, layout.requiredCanvasH * 0.85)}px`; 
+        let canvasW = canvas.clientWidth;
+        if (canvasW === 0) canvasW = document.getElementById('canvas-area').clientWidth;
+
+        const layout = calculateNodePositions(currentPuzzle.correctNodes, currentPuzzle.correctLinks, canvasW, true);
+        canvas.style.height = `${Math.max(250, layout.requiredCanvasH)}px`; 
 
         currentPuzzle.correctNodes.forEach(nodeType => {
             const p = layout.positions[nodeType];
-            const el = document.createElement('div'); el.className = 'aws-node-mini'; el.innerText = nodeType;
+            const el = document.createElement('div'); el.className = 'aws-node-mini'; el.innerText = getDisplayName(nodeType);
             el.style.left = `${p.x}px`; el.style.top = `${p.y}px`; el.style.borderBottom = `4px solid ${getAwsColor(nodeType)}`;
             canvas.appendChild(el);
         });
 
         currentPuzzle.correctLinks.forEach(link => {
             const p1 = layout.positions[link.from]; const p2 = layout.positions[link.to];
-            if (p1 && p2) drawLinkLine(svg, p1, p2, 'var(--success)', false);
+            if (p1 && p2) drawLinkLine(svg, p1, p2, 'var(--success)', false, link.label, true);
         });
     }
 </script>
