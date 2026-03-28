@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AWS SAA Puzzle | PERFECT EASTER EGG EDITION</title>
+    <title>AWS SAA Puzzle | PERFECT RESPONSIVE EDITION</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
@@ -113,7 +113,7 @@
         .controls-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: #eee; border: 3px solid #ccc; font-weight: bold; color: var(--primary); font-size: 14px; transition: background 0.3s, border-color 0.3s;}
         body.secret-mode .controls-area { background: #100010; border-color: #555; color: #eee; }
 
-        #canvas-area { position: relative; width: 100%; min-height: 400px; background: #fdfdfd; border: 4px dashed #333; margin-bottom: 20px; overflow: hidden; touch-action: pan-y; transition: background 0.3s, border-color 0.3s;}
+        #canvas-area { position: relative; width: 100%; min-height: 400px; background: #fdfdfd; border: 4px dashed #333; margin-bottom: 20px; overflow: auto; transition: background 0.3s, border-color 0.3s;}
         #links-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
         body.secret-mode #canvas-area { background: #000; border-color: #FF0040; }
 
@@ -158,7 +158,7 @@
 
         .explanation-text { font-size: 14px; line-height: 1.6; margin-top: 15px; font-weight: bold; color: inherit; white-space: pre-wrap; text-align: left;}
         
-        #correct-canvas { position: relative; width: 100%; min-height: 250px; background: #fdfdfd; border: 3px dashed #ccc; overflow: hidden; touch-action: pan-y; margin-top: 10px; transition: background 0.3s, border-color 0.3s;}
+        #correct-canvas { position: relative; width: 100%; min-height: 250px; background: #fdfdfd; border: 3px dashed #ccc; overflow: auto; margin-top: 10px; transition: background 0.3s, border-color 0.3s;}
         body.secret-mode #correct-canvas { background: #000; border-color: #FF0040; }
         
         .aws-node-mini { position: absolute; width: 90px; height: 42px; background: white; border: 3px solid var(--success); color: black; font-weight: bold; font-size: 10px; text-align: center; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); pointer-events: none; box-shadow: 2px 2px 0 #ccc; line-height: 1.2; padding: 2px; box-sizing: border-box; transition: background 0.3s, border-color 0.3s;}
@@ -198,17 +198,34 @@
             box-shadow: 0 0 100px transparent; transform: rotate(-45deg) translateY(150%);
         }
 
-        /* ★ マトリックス演出用キャンバス ★ */
         #matrix-canvas {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: 9998; background-color: black; pointer-events: none;
             transition: opacity 1.5s ease-in-out; opacity: 0;
         }
 
-        /* Change Mode ボタンの明滅アニメーション */
         @keyframes secret-btn-glow {
             0%, 100% { box-shadow: 4px 4px 0 #FF0040, 0 0 10px #FF0040; }
             50% { box-shadow: 4px 4px 0 #800020, 0 0 20px #800020; }
+        }
+
+        @media (max-width: 480px) {
+            .controls-area {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 12px;
+            }
+            .controls-area span {
+                margin-bottom: 10px;
+                text-align: center;
+            }
+            .controls-area > div {
+                justify-content: center;
+                gap: 15px;
+            }
+            .controls-area > div > button {
+                flex: 1; 
+            }
         }
     </style>
 </head>
@@ -227,7 +244,7 @@
         <div class="volume-control"><span class="volume-label">BGM VOLUME</span><input type="range" min="0" max="1" step="0.01" value="0.08" class="slider" oninput="updateBgmVolume(this.value)"></div>
         <div class="volume-control"><span class="volume-label">SE VOLUME</span><input type="range" min="0" max="1" step="0.01" value="0.5" class="slider" oninput="updateSeVolume(this.value)"></div>
         
-        <button class="menu-btn" style="background: var(--gold); color: black; margin-top: 15px; margin-bottom: 25px; text-align: center;" onclick="clickWrapper(openGlossary)">Service Detail</button>
+        <button class="menu-btn" style="background: var(--gold); color: black; margin-top: 15px; margin-bottom: 25px; text-align: center;" onclick="clickWrapper(openGlossary)">📚 SAA用語集</button>
 
         <button class="menu-btn primary" onclick="clickWrapper(() => closeSettings())">RESUME</button>
     </div>
@@ -374,7 +391,6 @@
     const TIME_LIMIT = 90; let timerInterval; let timeLeft = TIME_LIMIT;
     let glossaryData = {}; 
 
-    // ★ 隠し機能用変数 ★
     let isSecretMode = false;
     let emptySubmitCount = 0;
 
@@ -440,12 +456,10 @@
     function playSE(name) { if (!audioCtx || !soundBuffers[name]) return; if (audioCtx.state === 'suspended') audioCtx.resume(); const src = audioCtx.createBufferSource(); src.buffer = soundBuffers[name]; const gain = audioCtx.createGain(); gain.gain.value = seVolume; src.connect(gain).connect(audioCtx.destination); src.start(0); }
     function clickWrapper(cb) { unlockAudio(); playSE('select'); if (cb) setTimeout(cb, 10); }
     
-    // ★ クロスフェード対応のBGM再生ロジック ★
     function startBGM(fadeIn = false) { 
         if (bgmVolume === 0) return; 
         const bgmName = isSecretMode ? 'secret_bgm' : 'bgm'; 
         
-        // 同じ曲が流れているなら何もしない
         if (bgmSource && currentBGMName === bgmName) return;
 
         if (!soundBuffers[bgmName]) return;
@@ -470,7 +484,6 @@
         source.connect(gainNode).connect(audioCtx.destination); 
         source.start(0); 
 
-        // 古いBGMがあればフェードアウトして止める
         if (bgmSource && bgmGainNode) {
             const oldSource = bgmSource;
             const oldGain = bgmGainNode;
@@ -522,12 +535,11 @@
 
     function updateSeVolume(val) { seVolume = parseFloat(val); }
 
-    // ★ マトリックスアニメーション関数 ★
     let matrixInterval;
     function startMatrix() {
         const canvas = document.getElementById('matrix-canvas');
         canvas.classList.remove('hidden');
-        void canvas.offsetWidth; // リフロー強制
+        void canvas.offsetWidth; 
         canvas.style.opacity = '1';
         
         const ctx = canvas.getContext('2d');
@@ -557,7 +569,6 @@
 
     function openSettings() { 
         const changeModeBtn = document.getElementById('change-mode-btn');
-        // ★ ちょうど2回空送信（3回目なら非表示）
         if (currentPuzzle && currentPuzzle.title.includes('Shield AdvancedのSRT連携') && emptySubmitCount === 2 && !isSecretMode) {
             changeModeBtn.classList.remove('hidden');
         } else {
@@ -567,14 +578,12 @@
     }
     function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
 
-    // ★ 隠し機能のアクティベート処理（マトリックス演出） ★
     function activateSecretMode() {
         closeSettings();
         stopBGM();
         
         startMatrix();
         
-        // 3秒後にテーマを切り替え、フェードイン
         setTimeout(() => {
             isSecretMode = true;
             emptySubmitCount = 0; 
@@ -585,7 +594,7 @@
             const matrixCanvas = document.getElementById('matrix-canvas');
             matrixCanvas.style.opacity = '0';
             
-            startBGM(true); // BGMフェードイン
+            startBGM(true); 
             
             setTimeout(() => {
                 matrixCanvas.classList.add('hidden');
@@ -600,11 +609,7 @@
         document.body.className = themes[currentThemeIdx]; 
         
         document.getElementById('reset-mode-btn').classList.add('hidden');
-        
-        // メニュー画面なら theme-btn を表示する
-        if (document.getElementById('quiz-screen').classList.contains('hidden')) {
-            document.getElementById('theme-btn').classList.remove('hidden'); 
-        }
+        document.getElementById('theme-btn').classList.remove('hidden'); 
         
         stopBGM();
         if (!document.getElementById('quiz-screen').classList.contains('hidden')) {
@@ -652,9 +657,10 @@
         document.getElementById('main-menu-screen').classList.add('hidden'); 
         document.getElementById('quiz-screen').classList.remove('hidden'); 
         document.getElementById('back-btn').classList.remove('hidden');
-        
-        document.getElementById('theme-btn').classList.add('hidden'); 
         document.getElementById('reset-mode-btn').classList.add('hidden'); 
+        
+        // ★ 問題回答画面ではテーマ変更ボタン(★)は非表示にする
+        document.getElementById('theme-btn').classList.add('hidden'); 
         
         document.getElementById('puzzle-title').innerText = currentPuzzle.title;
         document.getElementById('q-text').innerText = currentPuzzle.question;
@@ -673,6 +679,7 @@
     
     function backToMenu() { 
         emptySubmitCount = 0; 
+        stopTimer(); 
         
         document.getElementById('quiz-screen').classList.add('hidden'); 
         document.getElementById('main-menu-screen').classList.remove('hidden'); 
@@ -681,13 +688,13 @@
         if (isSecretMode) {
             document.getElementById('reset-mode-btn').classList.remove('hidden');
             document.getElementById('theme-btn').classList.add('hidden'); 
-            // ★ Secret Mode中はBGMを止めない！
+            // Secret Mode中はBGMを止めない
         } else {
+            // メニューに戻ったらテーマ変更ボタンを復活
             document.getElementById('theme-btn').classList.remove('hidden'); 
             document.getElementById('reset-mode-btn').classList.add('hidden');
-            stopBGM(); // 通常時はメニューに戻ったらBGM停止
+            stopBGM(); 
         }
-        stopTimer(); 
     }
 
     function startTimer() {
@@ -748,23 +755,28 @@
         nodes.forEach(n => { if(layerMap[n] === undefined) layerMap[n] = 0; });
         
         let maxLayer = 0; let layerCounts = {};
+        let maxNodesInLayer = 0;
         nodes.forEach(n => {
             let l = layerMap[n]; maxLayer = Math.max(maxLayer, l);
             if(!layerCounts[l]) layerCounts[l] = []; layerCounts[l].push(n);
+            if(layerCounts[l].length > maxNodesInLayer) maxNodesInLayer = layerCounts[l].length;
         });
         
         const requiredHeightPerLayer = isMini ? 85 : 100;
         const requiredCanvasH = Math.max(isMini ? 250 : 350, (maxLayer + 2) * requiredHeightPerLayer);
         const spacingY = requiredCanvasH / (maxLayer + 2);
         
+        const minWidthPerNode = isMini ? 110 : 130; 
+        const requiredCanvasW = Math.max(canvasW, (maxNodesInLayer + 1) * minWidthPerNode);
+
         let positions = {};
         for(let l = 0; l <= maxLayer; l++) {
             if(!layerCounts[l]) continue;
             let nList = layerCounts[l];
-            let spacingX = canvasW / (nList.length + 1);
+            let spacingX = requiredCanvasW / (nList.length + 1);
             nList.forEach((type, idx) => { positions[type] = { x: spacingX * (idx + 1), y: spacingY * (l + 1) }; });
         }
-        return { positions, requiredCanvasH };
+        return { positions, requiredCanvasH, requiredCanvasW };
     }
 
     function drawLinkLine(svg, s1, s2, color, isDashed, labelText, isMini = false) {
@@ -815,6 +827,7 @@
         
         const canvasW = canvas.clientWidth || 300;
         const layout = calculateNodePositions(currentPuzzle.correctNodes, currentPuzzle.correctLinks, canvasW, false);
+        
         canvas.style.height = `${layout.requiredCanvasH}px`;
         
         slotData = currentPuzzle.correctNodes.map((type, i) => {
@@ -830,6 +843,9 @@
         svg.innerHTML = `<defs>
             <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#888" /></marker>
         </defs>`;
+        
+        svg.style.width = `${layout.requiredCanvasW}px`;
+        svg.style.height = `${layout.requiredCanvasH}px`;
         
         currentPuzzle.correctLinks.forEach(link => {
             const s1 = slotData.find(s => s.expectedType === link.from);
@@ -883,8 +899,11 @@
         if (dragData.ghostEl) dragData.ghostEl.remove();
         if (dragData.isDragging) {
             let targetSlotId = null; const canvasRect = document.getElementById('canvas-area').getBoundingClientRect();
+            const scrollL = document.getElementById('canvas-area').scrollLeft;
+            const scrollT = document.getElementById('canvas-area').scrollTop;
             if (e.clientX >= canvasRect.left && e.clientX <= canvasRect.right && e.clientY >= canvasRect.top && e.clientY <= canvasRect.bottom) {
-                const canvasX = e.clientX - canvasRect.left; const canvasY = e.clientY - canvasRect.top;
+                const canvasX = e.clientX - canvasRect.left + scrollL; 
+                const canvasY = e.clientY - canvasRect.top + scrollT;
                 for (let slot of slotData) { if (Math.hypot(slot.x - canvasX, slot.y - canvasY) < 40) { targetSlotId = slot.id; break; } }
             }
             if (targetSlotId) { placeNodeInSlot(targetSlotId, dragData.type); playSE('select'); } 
@@ -910,7 +929,6 @@
         let userNodes = slotData.map(s => s.placedType).filter(Boolean);
         let isCorrect = false;
 
-        // ★ イースターエッグのカウントロジック ★
         if (currentPuzzle && currentPuzzle.title.includes('Shield AdvancedのSRT連携')) {
             if (userNodes.length === 0) {
                 emptySubmitCount++;
@@ -983,7 +1001,10 @@
         if (canvasW === 0) canvasW = document.getElementById('canvas-area').clientWidth;
 
         const layout = calculateNodePositions(currentPuzzle.correctNodes, currentPuzzle.correctLinks, canvasW, true);
+        
         canvas.style.height = `${Math.max(250, layout.requiredCanvasH)}px`; 
+        svg.style.width = `${layout.requiredCanvasW}px`;
+        svg.style.height = `${Math.max(250, layout.requiredCanvasH)}px`;
 
         currentPuzzle.correctNodes.forEach(nodeType => {
             const p = layout.positions[nodeType];
