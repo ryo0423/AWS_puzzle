@@ -58,12 +58,9 @@
         .container { width: 100%; max-width: 650px; padding: 0 20px; position: relative; }
         .app-header { display: flex; justify-content: space-between; align-items: center; height: 50px; margin-bottom: 10px; position: relative; }
         
-        /* ★ 修正：左上に完全に固定させるために position: absolute; left: 0; を追加 ★ */
         .back-btn { position: absolute; left: 0; z-index: 10; background: white; color: black; border: 4px solid black; padding: 8px 18px; font-weight: 900; transform: skew(-15deg); cursor: pointer; box-shadow: 4px 4px 0 var(--primary); transition: 0.1s; text-transform: uppercase; letter-spacing: 1px; touch-action: manipulation; }
-        .back-btn:hover { background: var(--primary); color: white; transform: skew(-15deg) translate(-3px, -3px); box-shadow: 6px 6px 0 black; }
         
         .settings-btn { width: 45px; height: 45px; background: white; border: 4px solid black; display: flex; align-items: center; justify-content: center; cursor: pointer; transform: rotate(5deg); box-shadow: 4px 4px 0 var(--primary); transition: 0.1s; touch-action: manipulation; }
-        .settings-btn:hover { transform: rotate(5deg) translate(-3px, -3px); box-shadow: 6px 6px 0 black; }
         
         .settings-icon-bar, .settings-icon-bar::before, .settings-icon-bar::after { content: ""; width: 22px; height: 4px; background: black; position: absolute; }
         .settings-icon-bar::before { top: -8px; } .settings-icon-bar::after { top: 8px; }
@@ -102,7 +99,6 @@
         .drag-ghost { position: fixed; width: 95px; height: 45px; background: rgba(255,255,255,0.9); border: 3px solid black; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; text-align: center; box-shadow: 8px 8px 0 rgba(211,18,18,0.5); transform: translate(-50%, -50%) scale(1.1); pointer-events: none; z-index: 9999; line-height: 1.2; padding: 2px; box-sizing: border-box;}
 
         .menu-btn { border: 4px solid black; font-weight: 900; cursor: pointer; transition: 0.1s; padding: 15px; background: white; color: black; transform: skew(-8deg); width: 100%; margin-bottom: 15px; font-size: 15px; text-align: left; letter-spacing: 1px; touch-action: manipulation;}
-        .menu-btn:hover { background: var(--primary); color: white; transform: translate(-4px, -4px) skew(-8deg); box-shadow: 8px 8px 0 black; }
         .menu-btn.primary { background: var(--primary); color: white; box-shadow: 6px 6px 0 black; font-size: 18px; text-align: center; }
         .menu-btn.small { padding: 8px 15px; font-size: 13px; box-shadow: 3px 3px 0 black; width: auto; margin: 0;}
 
@@ -153,7 +149,7 @@
             50% { box-shadow: 4px 4px 0 #800020, 0 0 20px #800020; }
         }
 
-        /* 隠しモード用のスタイル（元のまま） */
+        /* 隠しモード用のスタイル */
         body.secret-mode {
             --primary: #FF0040; --bg: #050005; --card: #1a001a; --text: #eeeeee; --success: #00ff40; --gold: #ff00ff; --slot-bg: #100010; --grad-color: rgba(255, 0, 64, 0.3);
         }
@@ -163,10 +159,8 @@
             background-size: 100px 100px; background-position: 0 0, 0 50px, 50px 50px, 50px 0; opacity: 0.1; animation: secret-bg-move 10s linear infinite; z-index: -1;
         }
         body.secret-mode .back-btn { background: #000; color: #eee; border-color: #FF0040; box-shadow: 4px 4px 0 #FF0040; }
-        body.secret-mode .back-btn:hover { background: #FF0040; color: white; box-shadow: 6px 6px 0 #000; }
         body.secret-mode .settings-btn { background: #000; border-color: #FF0040; box-shadow: 4px 4px 0 #FF0040; }
         body.secret-mode .settings-icon-bar, body.secret-mode .settings-icon-bar::before, body.secret-mode .settings-icon-bar::after { background: #eee; }
-        body.secret-mode .settings-btn:hover { box-shadow: 6px 6px 0 #000; }
         body.secret-mode h1 { background: #FF0040; color: white; border: 3px solid black; box-shadow: 5px 5px 0 #000; }
         body.secret-mode .controls-area { background: #100010; border-color: #555; color: #eee; }
         body.secret-mode #canvas-area { background: #000; border-color: #FF0040; }
@@ -175,7 +169,6 @@
         body.secret-mode .palette-item { background: #000; color: #eee; border-color: #FF0040; box-shadow: 4px 4px 0 #000; }
         body.secret-mode .drag-ghost { background: rgba(26, 0, 26, 0.9); border-color: #FF0040; color: #eee; box-shadow: 8px 8px 0 rgba(255, 0, 64, 0.5); }
         body.secret-mode .menu-btn { background: #000; color: #eee; border-color: #FF0040; box-shadow: 4px 4px 0 #FF0040; }
-        body.secret-mode .menu-btn:hover { background: #FF0040; color: white; box-shadow: 8px 8px 0 #000; }
         body.secret-mode .menu-btn.primary { background: #FF0040; color: white; box-shadow: 6px 6px 0 #000; }
         body.secret-mode .result.correct { border-color: #00ff40; color: #00ff40; }
         body.secret-mode .result.wrong { background: #000; color: #eee; border-color: #FF0040; }
@@ -189,14 +182,28 @@
         body.secret-mode .slider::-webkit-slider-thumb { background: #FF0040; border-color: white; }
         body.secret-mode .correct-anime { border-color: #00ff40; }
 
+        /* ★ iOSホバーバグ(2回タップ問題)の修正：PCでのみホバーアニメーションを有効にする ★ */
+        @media (hover: hover) and (pointer: fine) {
+            .back-btn:hover { background: var(--primary); color: white; transform: skew(-15deg) translate(-3px, -3px); box-shadow: 6px 6px 0 black; }
+            body.secret-mode .back-btn:hover { background: #FF0040; color: white; box-shadow: 6px 6px 0 #000; }
+            .settings-btn:hover { transform: rotate(5deg) translate(-3px, -3px); box-shadow: 6px 6px 0 black; }
+            body.secret-mode .settings-btn:hover { box-shadow: 6px 6px 0 #000; }
+            .menu-btn:hover { background: var(--primary); color: white; transform: translate(-4px, -4px) skew(-8deg); box-shadow: 8px 8px 0 black; }
+            body.secret-mode .menu-btn:hover { background: #FF0040; color: white; box-shadow: 8px 8px 0 #000; }
+        }
+
+        /* ★ スマホ版の視認性改善（サイズアップ） ★ */
         @media (max-width: 480px) {
             .controls-area { flex-direction: column; align-items: stretch; padding: 10px; }
             .controls-area span { margin-bottom: 10px; text-align: center; font-size: 12px; }
             .controls-area > div { justify-content: center; gap: 10px; }
             .controls-area > div > button { flex: 1; }
-            .aws-slot, .aws-node, .drag-ghost { width: 85px !important; height: 40px !important; font-size: 10px !important; }
-            .aws-node-mini { width: 75px !important; height: 35px !important; font-size: 9px !important; }
-            .palette-item { padding: 5px 8px; font-size: 10px; }
+            
+            /* ノードサイズを大きくして視認性を向上 */
+            .aws-slot, .aws-node, .drag-ghost { width: 85px !important; height: 40px !important; font-size: 10.5px !important; }
+            .aws-node-mini { width: 80px !important; height: 38px !important; font-size: 9.5px !important; }
+            
+            .palette-item { padding: 7px 10px; font-size: 11px; }
             #q-text { font-size: 13px; }
             #result-btn-area { gap: 5px !important; }
             #result-btn-area .menu-btn { font-size: 11px !important; padding: 10px 4px !important; letter-spacing: 0 !important; white-space: nowrap; }
@@ -709,9 +716,9 @@
 
         document.getElementById('main-menu-screen').classList.add('hidden'); 
         document.getElementById('quiz-screen').classList.remove('hidden'); 
+        
         document.getElementById('back-btn').classList.remove('hidden');
         document.getElementById('reset-mode-btn').classList.add('hidden'); 
-        
         document.getElementById('theme-btn').classList.add('hidden'); 
         
         document.getElementById('puzzle-title').innerText = currentPuzzle.title;
@@ -815,7 +822,7 @@
         });
         
         const isMobile = window.innerWidth <= 480;
-        const requiredHeightPerLayer = isMini ? (isMobile ? 70 : 85) : (isMobile ? 80 : 100);
+        const requiredHeightPerLayer = isMini ? (isMobile ? 75 : 85) : (isMobile ? 85 : 100);
         const requiredCanvasH = Math.max(isMini ? 250 : 350, (maxLayer + 2) * requiredHeightPerLayer);
         const spacingY = requiredCanvasH / (maxLayer + 2);
         
@@ -836,8 +843,8 @@
         let nodeW = isMobile ? 85 : 95;
         let nodeH = isMobile ? 40 : 45;
         if (isMini) {
-            nodeW = isMobile ? 75 : 90;
-            nodeH = isMobile ? 35 : 42;
+            nodeW = isMobile ? 80 : 90;
+            nodeH = isMobile ? 38 : 42;
         }
         let w = nodeW / 2; let h = nodeH / 2; 
 
