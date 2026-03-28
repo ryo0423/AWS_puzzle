@@ -182,7 +182,7 @@
         body.secret-mode .slider::-webkit-slider-thumb { background: #FF0040; border-color: white; }
         body.secret-mode .correct-anime { border-color: #00ff40; }
 
-        /* ★ iOSホバーバグ(2回タップ問題)の修正：PCでのみホバーアニメーションを有効にする ★ */
+        /* ★ iOSホバーバグ(2回タップ問題)の完全修正：PCでのみホバーアニメーションを有効にする ★ */
         @media (hover: hover) and (pointer: fine) {
             .back-btn:hover { background: var(--primary); color: white; transform: skew(-15deg) translate(-3px, -3px); box-shadow: 6px 6px 0 black; }
             body.secret-mode .back-btn:hover { background: #FF0040; color: white; box-shadow: 6px 6px 0 #000; }
@@ -192,19 +192,14 @@
             body.secret-mode .menu-btn:hover { background: #FF0040; color: white; box-shadow: 8px 8px 0 #000; }
         }
 
-        /* ★ スマホ版の視認性改善（サイズアップ） ★ */
+        /* ★ スマホ版の視認性改善（ノード縮小を廃止し、パレットの2行折り返しを許容） ★ */
         @media (max-width: 480px) {
             .controls-area { flex-direction: column; align-items: stretch; padding: 10px; }
             .controls-area span { margin-bottom: 10px; text-align: center; font-size: 12px; }
             .controls-area > div { justify-content: center; gap: 10px; }
             .controls-area > div > button { flex: 1; }
             
-            /* ノードサイズを大きくして視認性を向上 */
-            .aws-slot, .aws-node, .drag-ghost { width: 85px !important; height: 40px !important; font-size: 10.5px !important; }
-            .aws-node-mini { width: 80px !important; height: 38px !important; font-size: 9.5px !important; }
-            
-            .palette-item { padding: 7px 10px; font-size: 11px; }
-            #q-text { font-size: 13px; }
+            #q-text { font-size: 14px; }
             #result-btn-area { gap: 5px !important; }
             #result-btn-area .menu-btn { font-size: 11px !important; padding: 10px 4px !important; letter-spacing: 0 !important; white-space: nowrap; }
             #result-btn-area .menu-btn.primary { font-size: 12px !important; }
@@ -221,7 +216,7 @@
     <div class="modal-content" onclick="event.stopPropagation()">
         <h2 style="font-size: 30px; margin-bottom: 20px; font-weight: 900;">MENU</h2>
         
-        <button id="change-mode-btn" class="menu-btn hidden" style="background: black; color: #FF0040; border-color: #FF0040; text-align: center; margin-bottom: 20px; animation: secret-btn-glow 2s infinite, shake 0.3s infinite;" onclick="clickWrapper(activateSecretMode)">🔥 CHANGE MODE</button>
+        <button id="change-mode-btn" class="menu-btn hidden" style="background: black; color: #FF0040; border-color: #FF0040; text-align: center; margin-bottom: 20px; animation: secret-btn-glow 2s infinite, shake 0.3s infinite;" onclick="clickWrapper(activateSecretMode)">CHANGE MODE</button>
 
         <div class="volume-control"><span class="volume-label">BGM VOLUME</span><input type="range" min="0" max="1" step="0.01" value="0.08" class="slider" oninput="updateBgmVolume(this.value)"></div>
         <div class="volume-control"><span class="volume-label">SE VOLUME</span><input type="range" min="0" max="1" step="0.01" value="0.5" class="slider" oninput="updateSeVolume(this.value)"></div>
@@ -354,6 +349,7 @@
     function getBaseName(s) {
         return s.replace(/[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, '')
                 .replace(/\s*\(.*$/, '')
+                .replace(/\s+\d+$/, '') 
                 .trim();
     }
     function getAwsColor(s) { return awsColors[getBaseName(s)] || "#555555"; }
@@ -716,9 +712,9 @@
 
         document.getElementById('main-menu-screen').classList.add('hidden'); 
         document.getElementById('quiz-screen').classList.remove('hidden'); 
-        
         document.getElementById('back-btn').classList.remove('hidden');
         document.getElementById('reset-mode-btn').classList.add('hidden'); 
+        
         document.getElementById('theme-btn').classList.add('hidden'); 
         
         document.getElementById('puzzle-title').innerText = currentPuzzle.title;
@@ -821,8 +817,8 @@
             if(layerCounts[l].length > maxNodesInLayer) maxNodesInLayer = layerCounts[l].length;
         });
         
-        const isMobile = window.innerWidth <= 480;
-        const requiredHeightPerLayer = isMini ? (isMobile ? 75 : 85) : (isMobile ? 85 : 100);
+        // ★ ラベル被りを防ぐため、ミニ（正解プレビュー）のときの縦の間隔を広げる ★
+        const requiredHeightPerLayer = isMini ? 120 : 120;
         const requiredCanvasH = Math.max(isMini ? 250 : 350, (maxLayer + 2) * requiredHeightPerLayer);
         const spacingY = requiredCanvasH / (maxLayer + 2);
         
@@ -837,22 +833,18 @@
     }
 
     function drawLinkLine(svg, s1, s2, color, isDashed, labelText, isMini = false) {
-        const isMobile = window.innerWidth <= 480;
         let dx = s2.x - s1.x; let dy = s2.y - s1.y; let angle = Math.atan2(dy, dx);
         
-        let nodeW = isMobile ? 85 : 95;
-        let nodeH = isMobile ? 40 : 45;
-        if (isMini) {
-            nodeW = isMobile ? 80 : 90;
-            nodeH = isMobile ? 38 : 42;
-        }
+        // PC・スマホ共通のノードサイズを使用
+        let nodeW = isMini ? 90 : 95;
+        let nodeH = isMini ? 42 : 45;
         let w = nodeW / 2; let h = nodeH / 2; 
 
         let absCos = Math.abs(Math.cos(angle)); let absSin = Math.abs(Math.sin(angle));
         let dist1 = (absCos * h > absSin * w) ? (w / absCos) : (h / absSin);
         
         let fromX = s1.x + dist1 * Math.cos(angle); let fromY = s1.y + dist1 * Math.sin(angle);
-        let dist2 = dist1 + (isMobile ? 6 : 8); 
+        let dist2 = dist1 + 8; 
         let toX = s2.x - dist2 * Math.cos(angle); let toY = s2.y - dist2 * Math.sin(angle);
 
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -867,19 +859,21 @@
             let normalAngle = angle - Math.PI / 2;
             if (dx < 0) normalAngle += Math.PI;
 
-            let offsetX = Math.cos(normalAngle) * 12;
-            let offsetY = Math.sin(normalAngle) * 12;
+            // ★ ラベル文字が線に被らないように距離(offset)を増やす ★
+            let offsetAmount = isMini ? 14 : 16;
+            let offsetX = Math.cos(normalAngle) * offsetAmount;
+            let offsetY = Math.sin(normalAngle) * offsetAmount;
 
             const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             text.setAttribute('x', ((fromX + toX) / 2) + offsetX);
             text.setAttribute('y', ((fromY + toY) / 2) + offsetY + 4); 
             text.setAttribute('fill', color);
-            text.setAttribute('font-size', isMini ? (isMobile ? '8' : '10') : (isMobile ? '8' : '11'));
+            text.setAttribute('font-size', isMini ? '10' : '11');
             text.setAttribute('text-anchor', 'middle');
             text.setAttribute('font-weight', 'bold');
             text.setAttribute('paint-order', 'stroke');
             text.setAttribute('stroke', isSecretMode ? '#000' : '#fdfdfd'); 
-            text.setAttribute('stroke-width', '3');
+            text.setAttribute('stroke-width', '4'); // ★ 文字の輪郭を太くして視認性アップ ★
             text.textContent = labelText;
             svg.appendChild(text);
         }
@@ -907,9 +901,6 @@
         svg.innerHTML = `<defs>
             <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#888" /></marker>
         </defs>`;
-        
-        svg.style.width = `100%`;
-        svg.style.height = `${layout.requiredCanvasH}px`;
         
         currentPuzzle.correctLinks.forEach(link => {
             const s1 = slotData.find(s => s.expectedType === link.from);
@@ -1067,9 +1058,6 @@
         const layout = calculateNodePositions(currentPuzzle.correctNodes, currentPuzzle.correctLinks, canvasW, true);
         canvas.style.height = `${Math.max(250, layout.requiredCanvasH)}px`; 
         
-        svg.style.width = `100%`;
-        svg.style.height = `${Math.max(250, layout.requiredCanvasH)}px`;
-
         currentPuzzle.correctNodes.forEach(nodeType => {
             const p = layout.positions[nodeType];
             const el = document.createElement('div'); el.className = 'aws-node-mini'; el.innerText = getDisplayName(nodeType);
