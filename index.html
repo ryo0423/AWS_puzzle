@@ -87,21 +87,16 @@
         .container { width: 100%; max-width: 650px; padding: 0 20px; position: relative; }
         .app-header { display: flex; justify-content: space-between; align-items: center; height: 50px; margin-bottom: 10px; position: relative;}
         
-        .back-btn { position: absolute; left: 0; top: 0; background: white; color: black; border: 4px solid black; padding: 8px 18px; font-weight: 900; transform: skew(-15deg); cursor: pointer; box-shadow: 4px 4px 0 var(--primary); transition: 0.1s; text-transform: uppercase; letter-spacing: 1px; z-index: 10;}
-        .back-btn:hover { background: var(--primary); color: white; transform: skew(-15deg) translate(-3px, -3px); box-shadow: 6px 6px 0 black; }
-        
+        .back-btn { position: absolute; left: 0; top: 0; background: white; color: black; border: 4px solid black; padding: 8px 18px; font-weight: 900; transform: skew(-15deg); cursor: pointer; box-shadow: 4px 4px 0 var(--primary); transition: 0.1s; text-transform: uppercase; letter-spacing: 1px; z-index: 10; touch-action: manipulation;}
         body.secret-mode .back-btn { background: #000; color: #eee; border-color: #FF0040; box-shadow: 4px 4px 0 #FF0040; }
-        body.secret-mode .back-btn:hover { background: #FF0040; color: white; box-shadow: 6px 6px 0 #000; }
 
         .settings-btn { width: 45px; height: 45px; background: white; border: 4px solid black; display: flex; align-items: center; justify-content: center; cursor: pointer; transform: rotate(5deg); box-shadow: 4px 4px 0 var(--primary); transition: 0.1s; flex-shrink: 0;}
-        .settings-btn:hover { transform: rotate(5deg) translate(-3px, -3px); box-shadow: 6px 6px 0 black; }
         
         .settings-icon-bar, .settings-icon-bar::before, .settings-icon-bar::after { content: ""; width: 22px; height: 4px; background: black; position: absolute; }
         .settings-icon-bar::before { top: -8px; } .settings-icon-bar::after { top: 8px; }
 
         body.secret-mode .settings-btn { background: #000; border-color: #FF0040; box-shadow: 4px 4px 0 #FF0040; }
         body.secret-mode .settings-icon-bar, body.secret-mode .settings-icon-bar::before, body.secret-mode .settings-icon-bar::after { background: #eee; }
-        body.secret-mode .settings-btn:hover { box-shadow: 6px 6px 0 #000; }
 
         .card { background: var(--card); color: var(--text); padding: 20px; border: 5px solid black; box-shadow: 12px 12px 0px var(--primary); position: relative; transition: box-shadow 0.3s, background 0.3s, border-color 0.3s; }
         
@@ -141,13 +136,22 @@
         .drag-ghost { position: fixed; width: 95px; height: 45px; background: rgba(255,255,255,0.9); border: 3px solid black; font-weight: bold; font-size: 11px; display: flex; align-items: center; justify-content: center; text-align: center; box-shadow: 8px 8px 0 rgba(211,18,18,0.5); transform: translate(-50%, -50%) scale(1.1); pointer-events: none; z-index: 9999; line-height: 1.2; padding: 2px; box-sizing: border-box;}
         body.secret-mode .drag-ghost { background: rgba(26, 0, 26, 0.9); border-color: #FF0040; color: #eee; box-shadow: 8px 8px 0 rgba(255, 0, 64, 0.5); }
 
-        .menu-btn { border: 4px solid black; font-weight: 900; cursor: pointer; transition: 0.1s; padding: 15px; background: white; color: black; transform: skew(-8deg); width: 100%; margin-bottom: 15px; font-size: 15px; text-align: left; letter-spacing: 1px;}
-        .menu-btn:hover { background: var(--primary); color: white; transform: translate(-4px, -4px) skew(-8deg); box-shadow: 8px 8px 0 black; }
+        .menu-btn { border: 4px solid black; font-weight: 900; cursor: pointer; transition: 0.1s; padding: 15px; background: white; color: black; transform: skew(-8deg); width: 100%; margin-bottom: 15px; font-size: 15px; text-align: left; letter-spacing: 1px; touch-action: manipulation;}
         .menu-btn.primary { background: var(--primary); color: white; box-shadow: 6px 6px 0 black; font-size: 18px; text-align: center; }
         .menu-btn.small { padding: 8px 15px; font-size: 13px; box-shadow: 3px 3px 0 black; width: auto; margin: 0;}
         body.secret-mode .menu-btn { background: #000; color: #eee; border-color: #FF0040; box-shadow: 4px 4px 0 #FF0040; }
-        body.secret-mode .menu-btn:hover { background: #FF0040; color: white; box-shadow: 8px 8px 0 #000; }
         body.secret-mode .menu-btn.primary { background: #FF0040; color: white; box-shadow: 6px 6px 0 #000; }
+
+        @media (hover: hover) and (pointer: fine) {
+            .back-btn:hover { background: var(--primary); color: white; transform: skew(-15deg) translate(-3px, -3px); box-shadow: 6px 6px 0 black; }
+            body.secret-mode .back-btn:hover { background: #FF0040; color: white; box-shadow: 6px 6px 0 #000; }
+
+            .settings-btn:hover { transform: rotate(5deg) translate(-3px, -3px); box-shadow: 6px 6px 0 black; }
+            body.secret-mode .settings-btn:hover { box-shadow: 6px 6px 0 #000; }
+
+            .menu-btn:hover { background: var(--primary); color: white; transform: translate(-4px, -4px) skew(-8deg); box-shadow: 8px 8px 0 black; }
+            body.secret-mode .menu-btn:hover { background: #FF0040; color: white; box-shadow: 8px 8px 0 #000; }
+        }
 
         .result { margin-top: 25px; padding: 20px; border: 5px solid black; font-weight: 900; }
         .correct { border-color: var(--success); color: var(--success); }
@@ -180,7 +184,7 @@
         #glossary-modal .modal-content::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
 
         .volume-control { margin: 25px 0; text-align: left; } .volume-label { font-size: 14px; font-weight: 900; margin-bottom: 10px; display: block; letter-spacing: 2px; }
-        .slider { appearance: none; -webkit-appearance: none; width: 100%; height: 8px; background: #444; outline: none; border: 2px solid white; transition: border-color 0.3s;}
+        .slider { appearance: none; -webkit-appearance: none; width: 100%; height: 8px; background: #444; outline: none; border: 2px solid white; transition: border-color 0.3s; touch-action: manipulation;}
         .slider::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 20px; height: 20px; background: white; cursor: pointer; border: 3px solid var(--primary); border-radius: 50%; transition: border-color 0.3s; }
         body.secret-mode .slider { border-color: #FF0040; background: #000; }
         body.secret-mode .slider::-webkit-slider-thumb { background: #FF0040; border-color: white; }
@@ -210,41 +214,17 @@
         }
 
         @media (max-width: 480px) {
-            .controls-area {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 10px;
-            }
-            .controls-area span {
-                margin-bottom: 10px;
-                text-align: center;
-                font-size: 12px;
-            }
-            .controls-area > div {
-                justify-content: center;
-                gap: 10px;
-            }
-            .controls-area > div > button {
-                flex: 1; 
-            }
-
-            .aws-slot, .aws-node, .drag-ghost {
-                width: 75px !important;
-                height: 35px !important;
-                font-size: 9px !important;
-            }
-            .aws-node-mini {
-                width: 65px !important;
-                height: 30px !important;
-                font-size: 8px !important;
-            }
-            .palette-item {
-                padding: 5px 8px;
-                font-size: 9px;
-            }
-            #q-text {
-                font-size: 13px;
-            }
+            .controls-area { flex-direction: column; align-items: stretch; padding: 10px; }
+            .controls-area span { margin-bottom: 10px; text-align: center; font-size: 12px; }
+            .controls-area > div { justify-content: center; gap: 10px; }
+            .controls-area > div > button { flex: 1; }
+            .aws-slot, .aws-node, .drag-ghost { width: 75px !important; height: 35px !important; font-size: 9px !important; }
+            .aws-node-mini { width: 65px !important; height: 30px !important; font-size: 8px !important; }
+            .palette-item { padding: 5px 8px; font-size: 9px; }
+            #q-text { font-size: 13px; }
+            #result-btn-area { gap: 5px !important; }
+            #result-btn-area .menu-btn { font-size: 11px !important; padding: 10px 4px !important; letter-spacing: 0 !important; white-space: nowrap; }
+            #result-btn-area .menu-btn.primary { font-size: 12px !important; }
         }
     </style>
 </head>
@@ -279,9 +259,9 @@
 
 <div class="container">
     <header class="app-header">
-        <div style="display:flex; gap:10px; margin-right: auto; align-items: center; z-index: 10;">
+        <div style="display:flex; gap:10px; margin-right: auto; align-items: center; z-index: 10; position: relative;">
             <button id="theme-btn" class="settings-btn" style="font-size: 20px;" onclick="clickWrapper(cycleTheme)">★</button>
-            <button id="reset-mode-btn" class="menu-btn small hidden" style="background: black; color: white; border-color: white; margin: 0; padding: 6px 10px;" onclick="clickWrapper(deactivateSecretMode)">RESET MODE</button>
+            <button id="reset-mode-btn" class="menu-btn small hidden" style="position: absolute; left: 0; background: black; color: white; border-color: white; margin: 0; padding: 6px 10px;" onclick="clickWrapper(deactivateSecretMode)">RESET MODE</button>
         </div>
         
         <button id="back-btn" class="back-btn hidden" onclick="clickWrapper(backToMenu)">◀ BACK</button>
@@ -291,8 +271,8 @@
 
     <div id="main-menu-screen" class="card">
         <h1>AWS SAA Puzzle</h1>
-        <div style="font-weight: bold; margin-bottom: 20px;">制限時間：各問 90秒</div>
-        <div id="loading-screen">loading...</div>
+        <div style="font-weight: bold; margin-bottom: 20px;">Time Limit: 90 seconds per question</div>
+        <div id="loading-screen">Loading...</div>
         <div id="puzzle-list"></div>
     </div>
 
@@ -331,7 +311,7 @@
                 </div>
             </div>
 
-            <div style="display: flex; gap: 10px; margin-top: 25px;">
+            <div id="result-btn-area" style="display: flex; gap: 10px; margin-top: 25px;">
                 <button id="retry-btn-result" class="menu-btn" style="background: white; color: black; margin-bottom: 0;" onclick="clickWrapper(retryPuzzle)">もう一度</button>
                 <button id="next-btn" class="menu-btn primary hidden" style="margin-bottom: 0;" onclick="clickWrapper(nextPuzzle)">次の問題へ</button>
                 <button id="menu-btn-result" class="menu-btn primary" style="margin-bottom: 0;" onclick="clickWrapper(backToMenu)">メニューへ</button>
@@ -414,7 +394,12 @@
     let emptySubmitCount = 0;
 
     window.addEventListener('DOMContentLoaded', () => {
-        initAudio(); document.addEventListener('pointermove', onPointerMove); document.addEventListener('pointerup', onPointerUp); loadCSV();
+        ['pointerdown', 'touchstart', 'click', 'keydown'].forEach(evt => {
+            document.addEventListener(evt, unlockAudio, { once: true });
+        });
+        document.addEventListener('pointermove', onPointerMove); 
+        document.addEventListener('pointerup', onPointerUp); 
+        loadCSV();
     });
 
     function loadCSV() {
@@ -458,7 +443,14 @@
     let bgmSource = null; let bgmGainNode = null; let currentBGMName = null; let loopTimeout = null;
 
     function initAudio() {
-        if (audioInitialized) return; audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioInitialized) return; 
+        try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.warn("Web Audio API not supported");
+            return;
+        }
+        
         ['bgm', 'correct', 'wrong', 'select', 'secret_bgm'].forEach(name => {
             let url;
             if (name === 'bgm') url = './assets/sounds/BGM/persona5_style_music.mp3';
@@ -469,11 +461,50 @@
         });
         audioInitialized = true;
     }
-    async function loadSound(name, url) { try { const res = await fetch(url); soundBuffers[name] = await audioCtx.decodeAudioData(await res.arrayBuffer()); } catch(e){} }
-    const unlockAudio = () => { if (!audioInitialized) initAudio(); if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); };
-    document.addEventListener('pointerdown', unlockAudio, { once: true });
-    function playSE(name) { if (!audioCtx || !soundBuffers[name]) return; if (audioCtx.state === 'suspended') audioCtx.resume(); const src = audioCtx.createBufferSource(); src.buffer = soundBuffers[name]; const gain = audioCtx.createGain(); gain.gain.value = seVolume; src.connect(gain).connect(audioCtx.destination); src.start(0); }
-    function clickWrapper(cb) { unlockAudio(); playSE('select'); if (cb) setTimeout(cb, 10); }
+
+    async function loadSound(name, url) { 
+        try { 
+            const res = await fetch(url); 
+            const buf = await res.arrayBuffer();
+            soundBuffers[name] = await audioCtx.decodeAudioData(buf); 
+            
+            if ((name === 'bgm' && !isSecretMode) || (name === 'secret_bgm' && isSecretMode)) {
+                if (bgmVolume > 0 && !bgmSource) {
+                    if (isSecretMode || !document.getElementById('quiz-screen').classList.contains('hidden')) {
+                        startBGM(true);
+                    }
+                }
+            }
+        } catch(e){
+            console.error("Audio load error:", name, e);
+        } 
+    }
+
+    const unlockAudio = () => { 
+        if (!audioInitialized) initAudio(); 
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume().catch(()=>{});
+        }
+    };
+
+    function playSE(name) { 
+        if (!audioCtx || !soundBuffers[name]) return; 
+        if (audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{}); 
+        try {
+            const src = audioCtx.createBufferSource(); 
+            src.buffer = soundBuffers[name]; 
+            const gain = audioCtx.createGain(); 
+            gain.gain.value = seVolume; 
+            src.connect(gain).connect(audioCtx.destination); 
+            src.start(0); 
+        } catch(e){}
+    }
+
+    function clickWrapper(cb) { 
+        unlockAudio(); 
+        playSE('select'); 
+        if (cb) setTimeout(cb, 10); 
+    }
     
     function startBGM(fadeIn = false) { 
         if (bgmVolume === 0) return; 
@@ -481,46 +512,58 @@
         
         if (bgmSource && currentBGMName === bgmName) return;
 
-        if (!soundBuffers[bgmName]) return;
-        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); 
+        if (!soundBuffers[bgmName]) return; 
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{}); 
 
         playNextLoop(bgmName, fadeIn);
     }
 
     function playNextLoop(bgmName, fadeIn) {
-        const source = audioCtx.createBufferSource(); 
-        source.buffer = soundBuffers[bgmName]; 
-        
-        const gainNode = audioCtx.createGain(); 
-        
-        if (fadeIn) {
-            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-            gainNode.gain.linearRampToValueAtTime(bgmVolume, audioCtx.currentTime + 3); 
-        } else {
-            gainNode.gain.value = bgmVolume; 
-        }
+        if (!audioCtx || !soundBuffers[bgmName]) return;
+        try {
+            const source = audioCtx.createBufferSource(); 
+            source.buffer = soundBuffers[bgmName]; 
+            
+            const gainNode = audioCtx.createGain(); 
+            
+            if (fadeIn) {
+                const now = Math.max(audioCtx.currentTime, 0);
+                gainNode.gain.setValueAtTime(0, now);
+                gainNode.gain.linearRampToValueAtTime(bgmVolume, now + 3); 
+            } else {
+                gainNode.gain.value = bgmVolume; 
+            }
 
-        source.connect(gainNode).connect(audioCtx.destination); 
-        source.start(0); 
+            source.connect(gainNode).connect(audioCtx.destination); 
+            source.start(0); 
 
-        if (bgmSource && bgmGainNode) {
-            const oldSource = bgmSource;
-            const oldGain = bgmGainNode;
-            oldGain.gain.setValueAtTime(oldGain.gain.value, audioCtx.currentTime);
-            oldGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 3);
-            setTimeout(() => { try { oldSource.stop(); } catch(e){} }, 3000);
-        }
+            if (bgmSource && bgmGainNode) {
+                const oldSource = bgmSource;
+                const oldGain = bgmGainNode;
+                try {
+                    const now = Math.max(audioCtx.currentTime, 0);
+                    oldGain.gain.cancelScheduledValues(now);
+                    oldGain.gain.setValueAtTime(oldGain.gain.value, now);
+                    oldGain.gain.linearRampToValueAtTime(0, now + 3);
+                } catch(e) {
+                    oldGain.gain.value = 0; 
+                }
+                setTimeout(() => { try { oldSource.stop(); } catch(e){} }, 3000);
+            }
 
-        bgmSource = source;
-        bgmGainNode = gainNode;
-        currentBGMName = bgmName;
+            bgmSource = source;
+            bgmGainNode = gainNode;
+            currentBGMName = bgmName;
 
-        const bufferDuration = source.buffer.duration;
-        clearTimeout(loopTimeout);
-        if (bufferDuration > 3) {
-            loopTimeout = setTimeout(() => {
-                playNextLoop(bgmName, true);
-            }, (bufferDuration - 3) * 1000);
+            const bufferDuration = source.buffer.duration;
+            clearTimeout(loopTimeout);
+            if (bufferDuration > 3) {
+                loopTimeout = setTimeout(() => {
+                    playNextLoop(bgmName, true);
+                }, (bufferDuration - 3) * 1000);
+            }
+        } catch(e) {
+            console.error("BGM Loop Error:", e);
         }
     }
 
@@ -529,8 +572,14 @@
         if (bgmSource && bgmGainNode) { 
             const oldSource = bgmSource;
             const oldGain = bgmGainNode;
-            oldGain.gain.setValueAtTime(oldGain.gain.value, audioCtx.currentTime);
-            oldGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+            try {
+                const now = Math.max(audioCtx.currentTime, 0);
+                oldGain.gain.cancelScheduledValues(now);
+                oldGain.gain.setValueAtTime(oldGain.gain.value, now);
+                oldGain.gain.linearRampToValueAtTime(0, now + 1);
+            } catch(e) {
+                oldGain.gain.value = 0;
+            }
             setTimeout(() => { try { oldSource.stop(); } catch(e){} }, 1000);
         } 
         bgmSource = null; 
@@ -541,11 +590,15 @@
     function updateBgmVolume(val) { 
         bgmVolume = parseFloat(val); 
         if (bgmGainNode) {
-            bgmGainNode.gain.setValueAtTime(bgmVolume, audioCtx.currentTime);
+            try {
+                bgmGainNode.gain.setValueAtTime(bgmVolume, Math.max(audioCtx.currentTime, 0));
+            } catch(e) {
+                bgmGainNode.gain.value = bgmVolume;
+            }
         }
         if (bgmVolume > 0 && !bgmSource) {
             if (isSecretMode || !document.getElementById('quiz-screen').classList.contains('hidden')) {
-                startBGM(); 
+                startBGM(true); 
             }
         } else if (bgmVolume === 0) {
             stopBGM(); 
@@ -588,7 +641,8 @@
 
     function openSettings() { 
         const changeModeBtn = document.getElementById('change-mode-btn');
-        if (currentPuzzle && currentPuzzle.title.includes('Shield AdvancedのSRT連携') && emptySubmitCount === 2 && !isSecretMode) {
+        const isResultHidden = document.getElementById('result-box').classList.contains('hidden');
+        if (currentPuzzle && currentPuzzle.title.includes('Shield AdvancedのSRT連携') && emptySubmitCount === 2 && isResultHidden && !isSecretMode) {
             changeModeBtn.classList.remove('hidden');
         } else {
             changeModeBtn.classList.add('hidden');
@@ -628,7 +682,10 @@
         document.body.className = themes[currentThemeIdx]; 
         
         document.getElementById('reset-mode-btn').classList.add('hidden');
-        document.getElementById('theme-btn').classList.remove('hidden'); 
+        
+        if (document.getElementById('quiz-screen').classList.contains('hidden')) {
+            document.getElementById('theme-btn').classList.remove('hidden'); 
+        }
         
         stopBGM();
         if (!document.getElementById('quiz-screen').classList.contains('hidden')) {
@@ -668,7 +725,6 @@
     }
 
     function startPuzzle(index) {
-        // ★ バグ修正用スクロール位置リセット ★
         window.scrollTo(0, 0);
 
         if (currentPuzzle !== puzzles[index]) {
@@ -678,9 +734,9 @@
 
         document.getElementById('main-menu-screen').classList.add('hidden'); 
         document.getElementById('quiz-screen').classList.remove('hidden'); 
+        
         document.getElementById('back-btn').classList.remove('hidden');
         document.getElementById('reset-mode-btn').classList.add('hidden'); 
-        
         document.getElementById('theme-btn').classList.add('hidden'); 
         
         document.getElementById('puzzle-title').innerText = currentPuzzle.title;
@@ -691,7 +747,7 @@
         document.getElementById('submit-btn').disabled = false;
         document.getElementById('canvas-area').style.pointerEvents = 'auto';
 
-        setupCanvas(); renderPalette(); startBGM(); startTimer();
+        setupCanvas(); renderPalette(); startBGM(true); startTimer();
         updateHintButtonState(); 
     }
 
@@ -699,7 +755,6 @@
     function nextPuzzle() { let idx = puzzles.indexOf(currentPuzzle); if (idx + 1 < puzzles.length) { stopTimer(); startPuzzle(idx + 1); } }
     
     function backToMenu() { 
-        // ★ バグ修正用スクロール位置リセット ★
         window.scrollTo(0, 0);
 
         emptySubmitCount = 0; 
