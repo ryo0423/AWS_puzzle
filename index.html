@@ -3,22 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AWS SAA Puzzle | P5 STYLISH & BUGFIX EDITION</title>
+    <title>AWS SAA Puzzle | PERFECT SAA EDITION</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        /* ★ P5風にカラーと影をより強烈にアップデート ★ */
         :root { 
-            --primary: #E50000; /* より鮮やかなP5レッド */
+            --primary: #E50000; 
             --bg: #111111;      
             --card: #FFFFFF;    
             --text: #000000; 
             --success: #28a745; 
             --gold: #FFCC00; 
             --slot-bg: #f5f5f5;
-            --grad-color: rgba(229, 0, 0, 0.25); /* ドットパターンの色 */
+            --grad-color: rgba(229, 0, 0, 0.25); 
         }
 
         body.theme-p3 {
@@ -46,7 +45,6 @@
         body { 
             font-family: 'Arial Black', 'Helvetica Neue', 'Hiragino Sans', sans-serif; 
             background-color: var(--bg); 
-            /* P5風のドットパターン背景 */
             background-image: radial-gradient(var(--grad-color) 15%, transparent 15%);
             background-size: 20px 20px;
             background-position: 0 0, 10px 10px;
@@ -65,10 +63,8 @@
         .settings-icon-bar, .settings-icon-bar::before, .settings-icon-bar::after { content: ""; width: 22px; height: 4px; background: black; position: absolute; }
         .settings-icon-bar::before { top: -8px; } .settings-icon-bar::after { top: 8px; }
 
-        /* カードの影を極太にしてP5のUIっぽさを演出 */
         .card { background: var(--card); color: var(--text); padding: 20px; border: 5px solid black; box-shadow: 12px 12px 0px var(--primary); position: relative; transition: box-shadow 0.3s; }
         
-        /* 見出しをテープ風に */
         h1 { background: black; color: white; display: inline-block; padding: 8px 25px; transform: rotate(-3deg) translateX(-10px); font-size: 22px; margin-top: -10px; margin-bottom: 20px; box-shadow: 5px 5px 0 var(--primary); letter-spacing: 2px; }
         
         #q-text { font-size: 15px; font-weight: 900; line-height: 1.6; border-left: 8px solid var(--primary); padding-left: 15px; margin-bottom: 15px; transition: border-color 0.3s; }
@@ -76,7 +72,9 @@
         .controls-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: #eee; border: 3px solid #ccc; font-weight: bold; color: var(--primary); font-size: 14px;}
 
         #canvas-area { position: relative; width: 100%; min-height: 400px; background: #fdfdfd; border: 4px dashed #333; margin-bottom: 20px; overflow: hidden; touch-action: pan-y; }
-        #links-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        
+        /* ★ 修正：矢印レイヤーのz-indexを3にして、スロット(2)より前に来るように変更 ★ */
+        #links-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
 
         .aws-slot {
             position: absolute; width: 95px; height: 45px; border: 3px dashed #888; background: var(--slot-bg);
@@ -110,7 +108,9 @@
         .explanation-text { font-size: 14px; line-height: 1.6; margin-top: 15px; font-weight: bold; color: inherit; white-space: pre-wrap; text-align: left;}
         
         #correct-canvas { position: relative; width: 100%; min-height: 250px; background: #fdfdfd; border: 3px dashed #ccc; overflow: hidden; touch-action: pan-y; margin-top: 10px;}
-        .aws-node-mini { position: absolute; width: 90px; height: 42px; background: white; border: 3px solid var(--success); color: black; font-weight: bold; font-size: 10px; text-align: center; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); pointer-events: none; box-shadow: 2px 2px 0 #ccc; line-height: 1.2; padding: 2px; box-sizing: border-box;}
+        
+        /* ★ 修正：ミニノードのz-indexを10に指定して、線(3)の上に確実に来るように変更 ★ */
+        .aws-node-mini { position: absolute; width: 90px; height: 42px; background: white; border: 3px solid var(--success); color: black; font-weight: bold; font-size: 10px; text-align: center; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); pointer-events: none; box-shadow: 2px 2px 0 #ccc; line-height: 1.2; padding: 2px; box-sizing: border-box; z-index: 10; }
 
         .timer-container { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: #000; border-top: 4px solid var(--primary); display: flex; align-items: center; justify-content: center; z-index: 100; box-shadow: 0 -5px 15px rgba(211,18,18,0.2); transition: border-color 0.3s; }
         .timer-bar { position: absolute; top: 0; left: 0; height: 100%; background: var(--primary); width: 100%; opacity: 0.5; transition: background 0.3s; }
@@ -182,7 +182,6 @@
         body.secret-mode .slider::-webkit-slider-thumb { background: #FF0040; border-color: white; }
         body.secret-mode .correct-anime { border-color: #00ff40; }
 
-        /* ★ iOSホバーバグ(2回タップ問題)の完全修正：PCでのみホバーアニメーションを有効にする ★ */
         @media (hover: hover) and (pointer: fine) {
             .back-btn:hover { background: var(--primary); color: white; transform: skew(-15deg) translate(-3px, -3px); box-shadow: 6px 6px 0 black; }
             body.secret-mode .back-btn:hover { background: #FF0040; color: white; box-shadow: 6px 6px 0 #000; }
@@ -192,17 +191,21 @@
             body.secret-mode .menu-btn:hover { background: #FF0040; color: white; box-shadow: 8px 8px 0 #000; }
         }
 
-        /* ★ スマホ版の視認性改善（ノード縮小を廃止し、パレットの2行折り返しを許容） ★ */
         @media (max-width: 480px) {
             .controls-area { flex-direction: column; align-items: stretch; padding: 10px; }
             .controls-area span { margin-bottom: 10px; text-align: center; font-size: 12px; }
             .controls-area > div { justify-content: center; gap: 10px; }
             .controls-area > div > button { flex: 1; }
             
+            .aws-slot, .aws-node, .drag-ghost { width: 105px !important; height: 50px !important; font-size: 11px !important; line-height: 1.3 !important; padding: 2px !important; white-space: normal !important; }
+            .aws-node-mini { width: 95px !important; height: 48px !important; font-size: 10px !important; line-height: 1.3 !important; padding: 2px !important; white-space: normal !important; }
+            
+            .palette-item { padding: 8px 10px; font-size: 11px; }
             #q-text { font-size: 14px; }
+            
             #result-btn-area { gap: 5px !important; }
-            #result-btn-area .menu-btn { font-size: 11px !important; padding: 10px 4px !important; letter-spacing: 0 !important; white-space: nowrap; }
-            #result-btn-area .menu-btn.primary { font-size: 12px !important; }
+            #result-btn-area .menu-btn { font-size: 13px !important; padding: 10px 4px !important; letter-spacing: 0 !important; white-space: nowrap; }
+            #result-btn-area .menu-btn.primary { font-size: 13px !important; }
         }
     </style>
 </head>
@@ -285,7 +288,7 @@
             <div id="correct-answer-area" class="hidden" style="margin-top: 20px; text-align: left; background: #fff; padding: 10px; border: 4px solid var(--success);">
                 <h3 style="margin-top: 0; margin-bottom: 10px; color: var(--success); font-size: 16px;">【正解の構成例】</h3>
                 <div id="correct-canvas">
-                    <svg id="correct-links-svg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></svg>
+                    <svg id="correct-links-svg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3;"></svg>
                 </div>
             </div>
 
@@ -335,30 +338,32 @@
     }
 
     const awsColors = {
-        "EC2": "#E86F21", "Lambda": "#E86F21", "ALB": "#E86F21", "ECS": "#E86F21", "Fargate": "#E86F21", "Auto Scaling": "#E86F21", "EKS": "#E86F21", "Elastic Beanstalk": "#E86F21", "NLB": "#E86F21", "ECR": "#E86F21", "App Runner": "#E86F21", "Capacity Provider": "#E86F21", "CodeDeploy": "#E86F21", "GitHub": "#E86F21", "Amplify": "#E86F21", "Cluster Placement": "#E86F21", "Spread Placement": "#E86F21", "Lifecycle Hook": "#E86F21", "Lambda@Edge": "#E86F21",
-        "S3": "#448123", "EFS": "#448123", "EBS": "#448123", "Storage Gateway": "#448123", "Backup": "#448123", "Snowball": "#448123", "DataSync": "#448123", "Snowball Edge": "#448123", "DataSync Agent": "#448123", "Tape Gateway": "#448123", "S3 Glacier": "#448123", "S3 Access Point": "#448123", "AWS Backup": "#448123", "Transfer Family": "#448123",
-        "RDS": "#3355DA", "DynamoDB": "#3355DA", "Aurora": "#3355DA", "ElastiCache": "#3355DA", "Redshift": "#3355DA", "DAX": "#3355DA", "RDS Proxy": "#3355DA", "Neptune": "#3355DA", "Aurora Serverless": "#3355DA", "PITR": "#3355DA", "Redshift Managed Storage": "#3355DA", "DynamoDB Streams": "#3355DA", "AQUA": "#3355DA", "TTL": "#3355DA",
-        "VPC": "#693CC5", "CloudFront": "#693CC5", "Route 53": "#693CC5", "API Gateway": "#693CC5", "Global Accelerator": "#693CC5", "Direct Connect": "#693CC5", "Transit Gateway": "#693CC5", "VPC Endpoint": "#693CC5", "NAT Gateway": "#693CC5", "VPN": "#693CC5", "Internet Gateway": "#693CC5", "AppSync": "#693CC5", "PrivateLink": "#693CC5", "TGW": "#693CC5", "TGW Peering": "#693CC5", "VPC Peering": "#693CC5", "OAC": "#693CC5", "EIP": "#693CC5", "使用量プラン": "#693CC5",
-        "IAM": "#CC2264", "KMS": "#CC2264", "WAF": "#CC2264", "Cognito": "#CC2264", "Secrets Manager": "#CC2264", "Shield": "#CC2264", "Macie": "#CC2264", "GuardDuty": "#CC2264", "Certificate Manager": "#CC2264", "IAM Role": "#CC2264", "STS": "#CC2264", "Shield Advanced": "#CC2264", "SRT": "#CC2264", "Network Firewall": "#CC2264", "MFAデバイス": "#CC2264", "署名付きURL": "#CC2264", "Digestファイル": "#CC2264", "Organizations": "#CC2264", "AWS RAM": "#CC2264", "データキー": "#CC2264",
-        "CloudWatch": "#E7157B", "CloudTrail": "#E7157B", "Systems Manager": "#E7157B", "Config": "#E7157B",
-        "SQS": "#E7157B", "SNS": "#E7157B", "EventBridge": "#E7157B", "Step Functions": "#E7157B", "MQ": "#E7157B", "Visibility Timeout": "#E7157B", "Archive": "#E7157B", "API Destination": "#E7157B",
-        "Kinesis": "#6B49AE", "Firehose": "#6B49AE", "Athena": "#6B49AE", "Glue": "#6B49AE", "EMR": "#6B49AE", "OpenSearch": "#6B49AE", "IoT Core": "#6B49AE", "Kinesis Streams": "#6B49AE", "Kinesis Analytics": "#6B49AE", "QuickSight": "#6B49AE", "Kinesis Video Streams": "#6B49AE", "Rekognition": "#6B49AE",
-        "ユーザー": "#222222", "管理者": "#222222", "開発者": "#222222", "クライアント": "#222222", "オンプレミス": "#222222", "デバイス": "#222222", "アプリ": "#222222", "ボット": "#222222", "取引先": "#222222", "攻撃者": "#222222", "ゲストユーザー": "#222222", "監査人": "#222222", "カメラ": "#222222"
+        "EC2": "#E86F21", "Lambda": "#E86F21", "ALB": "#E86F21", "ECS": "#E86F21", "Fargate": "#E86F21", "Auto Scaling": "#E86F21", "EKS": "#E86F21", "Elastic Beanstalk": "#E86F21", "NLB": "#E86F21", "ECR": "#E86F21", "App Runner": "#E86F21", "Capacity Provider": "#E86F21", "CodeDeploy": "#E86F21", "GitHub": "#E86F21", "Amplify": "#E86F21", "Cluster Placement": "#E86F21", "Spread Placement": "#E86F21", "Lifecycle Hook": "#E86F21", "Lambda@Edge": "#E86F21", "オンデマンドインスタンス": "#E86F21", "スポットインスタンス": "#E86F21", "リザーブドインスタンス": "#E86F21", "Webサーバー(EC2)": "#E86F21", "異常なEC2": "#E86F21", "正常なEC2": "#E86F21", "バッチ処理": "#E86F21",
+        "S3": "#448123", "EFS": "#448123", "EBS": "#448123", "Storage Gateway": "#448123", "Backup": "#448123", "Snowball": "#448123", "DataSync": "#448123", "Snowball Edge": "#448123", "DataSync Agent": "#448123", "Tape Gateway": "#448123", "S3 Glacier": "#448123", "S3 Access Point": "#448123", "AWS Backup": "#448123", "Transfer Family": "#448123", "S3 One Zone-IA": "#448123", "S3 Intelligent-Tiering": "#448123", "S3 Glacier Flexible Retrieval": "#448123", "S3 Glacier Deep Archive": "#448123", "S3 Standard-IA": "#448123", "バージョニング": "#448123", "EBS gp3": "#448123", "EBS io2": "#448123", "インスタンスストア": "#448123", "FSx for Windows": "#448123", "FSx for Lustre": "#448123",
+        "RDS": "#3355DA", "DynamoDB": "#3355DA", "Aurora": "#3355DA", "ElastiCache": "#3355DA", "Redshift": "#3355DA", "DAX": "#3355DA", "RDS Proxy": "#3355DA", "Neptune": "#3355DA", "Aurora Serverless": "#3355DA", "PITR": "#3355DA", "Redshift Managed Storage": "#3355DA", "DynamoDB Streams": "#3355DA", "AQUA": "#3355DA", "TTL": "#3355DA", "リードレプリカ": "#3355DA", "スタンバイレプリカ": "#3355DA", "マルチAZ配置": "#3355DA", "Redis": "#3355DA", "Aurora Global Database": "#3355DA",
+        "VPC": "#693CC5", "CloudFront": "#693CC5", "Route 53": "#693CC5", "API Gateway": "#693CC5", "Global Accelerator": "#693CC5", "Direct Connect": "#693CC5", "Transit Gateway": "#693CC5", "VPC Endpoint": "#693CC5", "NAT Gateway": "#693CC5", "VPN": "#693CC5", "Internet Gateway": "#693CC5", "AppSync": "#693CC5", "PrivateLink": "#693CC5", "TGW": "#693CC5", "TGW Peering": "#693CC5", "VPC Peering": "#693CC5", "OAC": "#693CC5", "EIP": "#693CC5", "使用量プラン": "#693CC5", "DBセキュリティグループ": "#693CC5", "フェイルオーバールーティング": "#693CC5", "S3 Transfer Acceleration": "#693CC5", "ヘルスチェック": "#693CC5", "Direct Connect Gateway": "#693CC5",
+        "IAM": "#CC2264", "KMS": "#CC2264", "WAF": "#CC2264", "Cognito": "#CC2264", "Secrets Manager": "#CC2264", "Shield": "#CC2264", "Macie": "#CC2264", "GuardDuty": "#CC2264", "Certificate Manager": "#CC2264", "IAM Role": "#CC2264", "STS": "#CC2264", "Shield Advanced": "#CC2264", "SRT": "#CC2264", "Network Firewall": "#CC2264", "MFAデバイス": "#CC2264", "署名付きURL": "#CC2264", "Digestファイル": "#CC2264", "Organizations": "#CC2264", "AWS RAM": "#CC2264", "データキー": "#CC2264", "SCP": "#CC2264", "Inspector": "#CC2264", "AWS SSO": "#CC2264", "Identity Center": "#CC2264", "Cognito User Pool": "#CC2264",
+        "CloudWatch": "#E7157B", "CloudTrail": "#E7157B", "Systems Manager": "#E7157B", "Config": "#E7157B", "Compute Savings Plans": "#E7157B", "AWS Cost Explorer": "#E7157B", "AWS Budgets": "#E7157B", "AWS Trusted Advisor": "#E7157B", "AWS Control Tower": "#E7157B", "Amazon CloudWatch Billing Alarms": "#E7157B", "CloudFormation": "#E7157B",
+        "SQS": "#E7157B", "SNS": "#E7157B", "EventBridge": "#E7157B", "Step Functions": "#E7157B", "MQ": "#E7157B", "Visibility Timeout": "#E7157B", "Archive": "#E7157B", "API Destination": "#E7157B", "可視性タイムアウト": "#E7157B", "SQS FIFOキュー": "#E7157B", "デッドレターキュー": "#E7157B",
+        "Kinesis": "#6B49AE", "Firehose": "#6B49AE", "Athena": "#6B49AE", "Glue": "#6B49AE", "EMR": "#6B49AE", "OpenSearch": "#6B49AE", "IoT Core": "#6B49AE", "Kinesis Streams": "#6B49AE", "Kinesis Data Streams": "#6B49AE", "Kinesis Analytics": "#6B49AE", "QuickSight": "#6B49AE", "Kinesis Video Streams": "#6B49AE", "Rekognition": "#6B49AE", "Lake Formation": "#6B49AE",
+        "ユーザー": "#222222", "管理者": "#222222", "開発者": "#222222", "クライアント": "#222222", "オンプレミス": "#222222", "デバイス": "#222222", "アプリ": "#222222", "ボット": "#222222", "取引先": "#222222", "攻撃者": "#222222", "ゲストユーザー": "#222222", "監査人": "#222222", "カメラ": "#222222", "プライマリサイト": "#222222", "スタンバイサイト": "#222222", "VPC A": "#222222", "VPC B": "#222222", "BIツール": "#222222"
     };
 
     function getBaseName(s) {
-        return s.replace(/[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, '')
+        let base = s.replace(/[\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF]/g, '')
                 .replace(/\s*\(.*$/, '')
-                .replace(/\s+\d+$/, '') 
                 .trim();
+        if (base === "Route53") base = "Route 53";
+        return base;
     }
+
     function getAwsColor(s) { return awsColors[getBaseName(s)] || "#555555"; }
 
     function getDisplayName(s) {
         const base = getBaseName(s);
         if (base === "ユーザー" || base === "クライアント" || base === "管理者" || base === "開発者" || base === "ゲストユーザー" || base === "監査人" || base === "攻撃者" || base === "取引先") return `👤 ${s}`;
-        if (base === "オンプレミス") return `🏢 ${s}`;
-        if (base === "デバイス" || base === "アプリ" || base === "ボット" || base === "カメラ") return `📱 ${s}`;
+        if (base === "オンプレミス" || base === "プライマリサイト" || base === "スタンバイサイト" || base === "VPC A" || base === "VPC B") return `🏢 ${s}`;
+        if (base === "デバイス" || base === "アプリ" || base === "ボット" || base === "カメラ" || base === "BIツール" || base === "バッチ処理") return `📱 ${s}`;
         return s;
     }
 
@@ -793,6 +798,7 @@
         updateHintButtonState(); 
     }
 
+    // ★ 修正：同じ層のノードのy座標にジグザグの段差をつける ★
     function calculateNodePositions(nodes, links, canvasW, isMini = false) {
         let inDegree = {}; let adj = {};
         nodes.forEach(n => { inDegree[n] = 0; adj[n] = []; });
@@ -817,17 +823,32 @@
             if(layerCounts[l].length > maxNodesInLayer) maxNodesInLayer = layerCounts[l].length;
         });
         
-        // ★ ラベル被りを防ぐため、ミニ（正解プレビュー）のときの縦の間隔を広げる ★
-        const requiredHeightPerLayer = isMini ? 120 : 120;
+        const isMobile = window.innerWidth <= 480;
+        const requiredHeightPerLayer = isMini ? (isMobile ? 120 : 120) : (isMobile ? 100 : 120);
         const requiredCanvasH = Math.max(isMini ? 250 : 350, (maxLayer + 2) * requiredHeightPerLayer);
         const spacingY = requiredCanvasH / (maxLayer + 2);
         
         let positions = {};
+        // ★ ジグザグ用のオフセット（ピクセル単位）
+        const zigzagOffset = isMini ? 18 : 22; 
+
         for(let l = 0; l <= maxLayer; l++) {
             if(!layerCounts[l]) continue;
             let nList = layerCounts[l];
             let spacingX = canvasW / (nList.length + 1); 
-            nList.forEach((type, idx) => { positions[type] = { x: spacingX * (idx + 1), y: spacingY * (l + 1) }; });
+            
+            nList.forEach((type, idx) => { 
+                let baseY = spacingY * (l + 1);
+                // ★ 複数のノードが同じ層に並ぶ場合、偶数番目と奇数番目でy座標を上下にずらして文字被りを防ぐ
+                if (nList.length > 1) {
+                    if (idx % 2 === 0) {
+                        baseY -= zigzagOffset;
+                    } else {
+                        baseY += zigzagOffset;
+                    }
+                }
+                positions[type] = { x: spacingX * (idx + 1), y: baseY }; 
+            });
         }
         return { positions, requiredCanvasH };
     }
@@ -835,9 +856,12 @@
     function drawLinkLine(svg, s1, s2, color, isDashed, labelText, isMini = false) {
         let dx = s2.x - s1.x; let dy = s2.y - s1.y; let angle = Math.atan2(dy, dx);
         
-        // PC・スマホ共通のノードサイズを使用
-        let nodeW = isMini ? 90 : 95;
-        let nodeH = isMini ? 42 : 45;
+        let nodeW = 95;
+        let nodeH = 45;
+        if (isMini) {
+            nodeW = 90;
+            nodeH = 42;
+        }
         let w = nodeW / 2; let h = nodeH / 2; 
 
         let absCos = Math.abs(Math.cos(angle)); let absSin = Math.abs(Math.sin(angle));
@@ -859,8 +883,7 @@
             let normalAngle = angle - Math.PI / 2;
             if (dx < 0) normalAngle += Math.PI;
 
-            // ★ ラベル文字が線に被らないように距離(offset)を増やす ★
-            let offsetAmount = isMini ? 14 : 16;
+            let offsetAmount = isMini ? 16 : 16;
             let offsetX = Math.cos(normalAngle) * offsetAmount;
             let offsetY = Math.sin(normalAngle) * offsetAmount;
 
@@ -868,12 +891,13 @@
             text.setAttribute('x', ((fromX + toX) / 2) + offsetX);
             text.setAttribute('y', ((fromY + toY) / 2) + offsetY + 4); 
             text.setAttribute('fill', color);
+            const isMobile = window.innerWidth <= 480;
             text.setAttribute('font-size', isMini ? '10' : '11');
             text.setAttribute('text-anchor', 'middle');
             text.setAttribute('font-weight', 'bold');
             text.setAttribute('paint-order', 'stroke');
             text.setAttribute('stroke', isSecretMode ? '#000' : '#fdfdfd'); 
-            text.setAttribute('stroke-width', '4'); // ★ 文字の輪郭を太くして視認性アップ ★
+            text.setAttribute('stroke-width', '5'); // ★ 白フチを付けて文字を見やすく ★
             text.textContent = labelText;
             svg.appendChild(text);
         }
@@ -954,11 +978,9 @@
         if (dragData.ghostEl) dragData.ghostEl.remove();
         if (dragData.isDragging) {
             let targetSlotId = null; const canvasRect = document.getElementById('canvas-area').getBoundingClientRect();
-            const scrollL = document.getElementById('canvas-area').scrollLeft || 0;
-            const scrollT = document.getElementById('canvas-area').scrollTop || 0;
             if (e.clientX >= canvasRect.left && e.clientX <= canvasRect.right && e.clientY >= canvasRect.top && e.clientY <= canvasRect.bottom) {
-                const canvasX = e.clientX - canvasRect.left + scrollL; 
-                const canvasY = e.clientY - canvasRect.top + scrollT;
+                const canvasX = e.clientX - canvasRect.left; 
+                const canvasY = e.clientY - canvasRect.top;
                 for (let slot of slotData) { if (Math.hypot(slot.x - canvasX, slot.y - canvasY) < 40) { targetSlotId = slot.id; break; } }
             }
             if (targetSlotId) { placeNodeInSlot(targetSlotId, dragData.type); playSE('select'); } 
