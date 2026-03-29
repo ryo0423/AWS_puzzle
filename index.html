@@ -73,7 +73,6 @@
 
         #canvas-area { position: relative; width: 100%; min-height: 400px; background: #fdfdfd; border: 4px dashed #333; margin-bottom: 20px; overflow: hidden; touch-action: pan-y; }
         
-        /* ★ 修正：矢印レイヤーのz-indexを3にして、スロット(2)より前に来るように変更 ★ */
         #links-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
 
         .aws-slot {
@@ -109,7 +108,6 @@
         
         #correct-canvas { position: relative; width: 100%; min-height: 250px; background: #fdfdfd; border: 3px dashed #ccc; overflow: hidden; touch-action: pan-y; margin-top: 10px;}
         
-        /* ★ 修正：ミニノードのz-indexを10に指定して、線(3)の上に確実に来るように変更 ★ */
         .aws-node-mini { position: absolute; width: 90px; height: 42px; background: white; border: 3px solid var(--success); color: black; font-weight: bold; font-size: 10px; text-align: center; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); pointer-events: none; box-shadow: 2px 2px 0 #ccc; line-height: 1.2; padding: 2px; box-sizing: border-box; z-index: 10; }
 
         .timer-container { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: #000; border-top: 4px solid var(--primary); display: flex; align-items: center; justify-content: center; z-index: 100; box-shadow: 0 -5px 15px rgba(211,18,18,0.2); transition: border-color 0.3s; }
@@ -149,7 +147,6 @@
             50% { box-shadow: 4px 4px 0 #800020, 0 0 20px #800020; }
         }
 
-        /* 隠しモード用のスタイル */
         body.secret-mode {
             --primary: #FF0040; --bg: #050005; --card: #1a001a; --text: #eeeeee; --success: #00ff40; --gold: #ff00ff; --slot-bg: #100010; --grad-color: rgba(255, 0, 64, 0.3);
         }
@@ -197,8 +194,9 @@
             .controls-area > div { justify-content: center; gap: 10px; }
             .controls-area > div > button { flex: 1; }
             
-            .aws-slot, .aws-node, .drag-ghost { width: 105px !important; height: 50px !important; font-size: 11px !important; line-height: 1.3 !important; padding: 2px !important; white-space: normal !important; }
-            .aws-node-mini { width: 95px !important; height: 48px !important; font-size: 10px !important; line-height: 1.3 !important; padding: 2px !important; white-space: normal !important; }
+            /* ★ 修正: スマホ版のノードサイズを少し縮小し、重なりにくく調整 */
+            .aws-slot, .aws-node, .drag-ghost { width: 85px !important; height: 42px !important; font-size: 10px !important; line-height: 1.2 !important; padding: 2px !important; white-space: normal !important; }
+            .aws-node-mini { width: 80px !important; height: 38px !important; font-size: 9px !important; line-height: 1.2 !important; padding: 2px !important; white-space: normal !important; }
             
             .palette-item { padding: 8px 10px; font-size: 11px; }
             #q-text { font-size: 14px; }
@@ -789,16 +787,7 @@
         }
     }
 
-    function useHint() {
-        let unsolvedSlots = slotData.filter(s => s.placedType !== s.expectedType);
-        if(unsolvedSlots.length <= 2) return;
-        
-        let targetSlot = unsolvedSlots[0];
-        placeNodeInSlot(targetSlot.id, targetSlot.expectedType);
-        updateHintButtonState(); 
-    }
-
-    // ★ 修正：同じ層のノードのy座標にジグザグの段差をつける ★
+    // ★ 修正：スマホ向けに余白を詰めて横幅を最大限に使い、Y軸のジグザグ落差を大きくする ★
     function calculateNodePositions(nodes, links, canvasW, isMini = false) {
         let inDegree = {}; let adj = {};
         nodes.forEach(n => { inDegree[n] = 0; adj[n] = []; });
@@ -824,13 +813,13 @@
         });
         
         const isMobile = window.innerWidth <= 480;
-        const requiredHeightPerLayer = isMini ? (isMobile ? 120 : 120) : (isMobile ? 100 : 120);
+        const requiredHeightPerLayer = isMini ? (isMobile ? 100 : 120) : (isMobile ? 120 : 120);
         const requiredCanvasH = Math.max(isMini ? 250 : 350, (maxLayer + 2) * requiredHeightPerLayer);
         const spacingY = requiredCanvasH / (maxLayer + 2);
         
         let positions = {};
-        // ★ ジグザグ用のオフセット（ピクセル単位）
-        const zigzagOffset = isMini ? 18 : 22; 
+        // ★ 修正: スマホの場合はジグザグの落差を大きくして重なりを徹底的に防ぐ
+        const zigzagOffset = isMobile ? 35 : (isMini ? 18 : 22); 
 
         for(let l = 0; l <= maxLayer; l++) {
             if(!layerCounts[l]) continue;
@@ -839,7 +828,6 @@
             
             nList.forEach((type, idx) => { 
                 let baseY = spacingY * (l + 1);
-                // ★ 複数のノードが同じ層に並ぶ場合、偶数番目と奇数番目でy座標を上下にずらして文字被りを防ぐ
                 if (nList.length > 1) {
                     if (idx % 2 === 0) {
                         baseY -= zigzagOffset;
@@ -847,20 +835,35 @@
                         baseY += zigzagOffset;
                     }
                 }
-                positions[type] = { x: spacingX * (idx + 1), y: baseY }; 
+
+                let posX = 0;
+                if (isMobile) {
+                    // ★ 修正: スマホでは両端の余白を削り、キャンバス幅をめいっぱい使って均等配置
+                    let usableW = canvasW - 20; // 左右10pxの余白
+                    let sX = usableW / nList.length;
+                    posX = 10 + sX * idx + sX / 2;
+                } else {
+                    // PCは従来通りのバランス
+                    posX = spacingX * (idx + 1);
+                }
+
+                positions[type] = { x: posX, y: baseY }; 
             });
         }
         return { positions, requiredCanvasH };
     }
 
+    // ★ 修正：矢印のラベルをスマホ向けに少し離す ★
     function drawLinkLine(svg, s1, s2, color, isDashed, labelText, isMini = false) {
+        const isMobile = window.innerWidth <= 480;
+        
         let dx = s2.x - s1.x; let dy = s2.y - s1.y; let angle = Math.atan2(dy, dx);
         
-        let nodeW = 95;
-        let nodeH = 45;
+        let nodeW = isMobile ? 85 : 95;
+        let nodeH = isMobile ? 42 : 45;
         if (isMini) {
-            nodeW = 90;
-            nodeH = 42;
+            nodeW = isMobile ? 80 : 90;
+            nodeH = isMobile ? 38 : 42;
         }
         let w = nodeW / 2; let h = nodeH / 2; 
 
@@ -883,7 +886,8 @@
             let normalAngle = angle - Math.PI / 2;
             if (dx < 0) normalAngle += Math.PI;
 
-            let offsetAmount = isMini ? 16 : 16;
+            // ★ 修正: スマホの場合は矢印のラベル（凡例）を少し遠ざけて被りを防ぐ
+            let offsetAmount = isMobile ? 22 : 16;
             let offsetX = Math.cos(normalAngle) * offsetAmount;
             let offsetY = Math.sin(normalAngle) * offsetAmount;
 
@@ -891,13 +895,12 @@
             text.setAttribute('x', ((fromX + toX) / 2) + offsetX);
             text.setAttribute('y', ((fromY + toY) / 2) + offsetY + 4); 
             text.setAttribute('fill', color);
-            const isMobile = window.innerWidth <= 480;
-            text.setAttribute('font-size', isMini ? '10' : '11');
+            text.setAttribute('font-size', isMobile ? (isMini ? '9' : '10') : (isMini ? '10' : '11'));
             text.setAttribute('text-anchor', 'middle');
             text.setAttribute('font-weight', 'bold');
             text.setAttribute('paint-order', 'stroke');
             text.setAttribute('stroke', isSecretMode ? '#000' : '#fdfdfd'); 
-            text.setAttribute('stroke-width', '5'); // ★ 白フチを付けて文字を見やすく ★
+            text.setAttribute('stroke-width', '5'); 
             text.textContent = labelText;
             svg.appendChild(text);
         }
